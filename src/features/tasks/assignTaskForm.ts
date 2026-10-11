@@ -9,7 +9,7 @@ import { createSelectOption } from "../../utils/dom";
 import type { Task } from "../../models/Task";
 import type { TaskData } from "../../types/types";
 
-import { updateTaskOnBoard } from "../tasks/taskBoard";
+import { updateTaskOnBoard } from "./taskBoard";
 
 // Initierar formuläret och dess händelsehantering
 export function setupAssignForm(): void {
@@ -54,7 +54,7 @@ export async function handleAssignTask(task: Task): Promise<void> {
 		);
 
 		if (matchingMembers.length === 0) {
-			renderNotice("Det finns ingen medlem med matchande kategori att tilldela.", "error");
+			renderNotice("Det finns ingen medlem med matchande medlem att tilldela.", "error");
 			return;
 		}
 

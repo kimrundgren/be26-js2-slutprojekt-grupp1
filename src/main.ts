@@ -12,7 +12,7 @@ import { setupEditTaskForm } from "./features/tasks/editTaskForm";
 import { setupTaskBoard } from "./features/tasks/taskBoard";
 import { renderTaskBoard } from "./features/tasks/taskBoard";
 import { createProjectForm } from "./features/projects/projectForm";
-import { setupAssignForm } from "./features/members/assignForm";
+import { setupAssignForm } from "./features/tasks/assignTaskForm";
 
 function initApp(): void {
 	const page = document.body.dataset.page;

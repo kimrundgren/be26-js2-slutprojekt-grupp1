@@ -4,7 +4,7 @@ import { getTasksByProject, deleteTask, updateTask } from "../../services/taskSe
 import { getAllMembers } from "../../services/memberService";
 import { createTaskCard } from "./taskCard";
 import { handleEditTask } from "./editTaskForm";
-import { handleAssignTask } from "../members/assignForm";
+import { handleAssignTask } from "./assignTaskForm";
 import type { Task } from "../../models/Task";
 import type { Member } from "../../models/Member";
 
