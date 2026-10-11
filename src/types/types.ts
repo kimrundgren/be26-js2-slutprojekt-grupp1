@@ -19,7 +19,7 @@ export interface TaskData {
 	priority: Priority;
 	deadline: string;
 	completed?: string;
-	assignedMemberId?: string;
+	memberId?: string;
 }
 
 export interface MemberData {

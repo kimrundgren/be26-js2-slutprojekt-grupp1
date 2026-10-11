@@ -24,7 +24,7 @@ export class Task {
 		this.priority = data.priority;
 		this.deadline = data.deadline;
 		this.completed = data.completed;
-		this.assignedMemberId = data.assignedMemberId;
+		this.assignedMemberId = data.memberId;
 	}
 
 	getId(): string {
