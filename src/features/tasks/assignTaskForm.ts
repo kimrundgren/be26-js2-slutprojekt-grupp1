@@ -54,7 +54,7 @@ export async function handleAssignTask(task: Task): Promise<void> {
 		);
 
 		if (matchingMembers.length === 0) {
-			renderNotice("Det finns ingen medlem med matchande medlem att tilldela.", "error");
+			renderNotice("Det finns ingen medlem med matchande kategori att tilldela.", "error");
 			return;
 		}
 
