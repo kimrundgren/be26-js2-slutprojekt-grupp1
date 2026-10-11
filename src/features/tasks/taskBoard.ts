@@ -1,14 +1,18 @@
 import { renderNotice, clearNotice } from "../../components/notice";
 
 import { getTasksByProject, deleteTask, updateTask } from "../../services/taskService";
+import { getAllMembers } from "../../services/memberService";
 import { createTaskCard } from "./taskCard";
 import { handleEditTask } from "./editTaskForm";
+import { handleAssignTask } from "../members/assignForm";
 import type { Task } from "../../models/Task";
+import type { Member } from "../../models/Member";
 
 import { clearElements } from "../../utils/dom";
 import type { TaskData } from "../../types/types";
 
 let tasks: Task[] = [];
+let members: Member[] = [];
 
 // Kopplar klickhantering till boarden
 export function setupTaskBoard(): void {
@@ -45,6 +49,14 @@ function handleTaskBoardClick(event: MouseEvent): void {
 
 	if (button.dataset.action === "complete") {
 		handleCompleteTask(taskId);
+	}
+
+	if (button.dataset.action === "assign") {
+		const task = tasks.find((task) => task.getId() === taskId);
+
+		if (!task) return;
+
+		handleAssignTask(task);
 	}
 }
 
@@ -85,7 +97,7 @@ async function handleCompleteTask(taskId: string): Promise<void> {
 // Hämtar projektets uppgifter och visar boarden
 export async function renderTaskBoard(projectId: string): Promise<void> {
 	try {
-		tasks = await getTasksByProject(projectId);
+		[tasks, members] = await Promise.all([getTasksByProject(projectId), getAllMembers()]);
 
 		renderTasks();
 		clearNotice();
@@ -115,7 +127,7 @@ function renderTasks(): void {
 	clearElements([newColumn, ongoingColumn, doneColumn]);
 
 	for (const task of tasks) {
-		const card = createTaskCard(task);
+		const card = createTaskCard(task, members);
 		const column = columns[task.getStatus()];
 
 		column.append(card);
@@ -138,6 +150,7 @@ export function updateTaskOnBoard(taskId: string, updates: Partial<TaskData>): v
 	if (updates.deadline) task.setDeadline(updates.deadline);
 	if (updates.status) task.setStatus(updates.status);
 	if (updates.completed) task.setCompleted(updates.completed);
+	if (updates.memberId) task.setAssignedMember(updates.memberId);
 
 	renderTasks();
 }

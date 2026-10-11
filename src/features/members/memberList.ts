@@ -13,7 +13,7 @@ async function getOngoingTaskCount(member: Member): Promise<number> {
 		.flat()
 		.filter(
 			(task) =>
-				task.getAssignedMemberId() === member.getId() &&
+				task.getAssignedMember() === member.getId() &&
 				task.getStatus() === "ongoing",
 		).length;
 }

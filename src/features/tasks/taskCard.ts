@@ -3,6 +3,7 @@ import { PRIORITY_LABELS, CATEGORY_LABELS, DATE_FORMAT } from "../../constants";
 import { formatDate } from "../../utils/date";
 
 import type { Task } from "../../models/Task";
+import type { Member } from "../../models/Member";
 import type { TaskStatus, Priority } from "../../types/types";
 
 type TaskAction = "assign" | "edit" | "complete" | "delete";
@@ -75,7 +76,7 @@ function createActionButtons(task: Task): HTMLDivElement {
 }
 
 // Bygger ett uppgiftskort med information och tillgängliga actions
-export function createTaskCard(task: Task): HTMLDivElement {
+export function createTaskCard(task: Task, members: Member[]): HTMLDivElement {
 	const card = document.createElement("div");
 	card.className = "card mb-2";
 	card.dataset.taskId = task.getId();
@@ -113,9 +114,9 @@ export function createTaskCard(task: Task): HTMLDivElement {
 	const assignedMember = document.createElement("div");
 	assignedMember.className = "small text-body-secondary";
 
-	// TODO: hämta medlemslistan en gång, inte separat för varje kort. Plocka ut namn (Therese)
 	if (status !== "new") {
-		assignedMember.textContent = "Tilldelad: " + "{Förnamn Efternamn}";
+		const member = members.find((member) => member.getId() === task.getAssignedMember());
+		assignedMember.textContent = "Tilldelad: " + (member?.getName() ?? "Okänd medlem");
 	}
 
 	cardBody.append(badges, title, description, assignedMember, created, deadline, actions);

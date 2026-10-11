@@ -1,11 +1,5 @@
 import type { Member } from "../../models/Member";
-import type { Category } from "../../types/types";
-
-const categoryLabels: Record<Category, string> = {
-	frontend: "Frontend",
-	backend: "Backend",
-	ux: "UX",
-};
+import { CATEGORY_LABELS } from "../../constants";
 
 export function createMemberCard(
 	member: Member,
@@ -30,7 +24,7 @@ export function createMemberCard(
 
 	const badge = document.createElement("span");
 	badge.className = "badge bg-body-secondary text-body fw-normal";
-	badge.textContent = categoryLabels[member.getCategory()];
+	badge.textContent = CATEGORY_LABELS[member.getCategory()];
 
 	const projectLine = document.createElement("div");
 	projectLine.className = "small text-muted";

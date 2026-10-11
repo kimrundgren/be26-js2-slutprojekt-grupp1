@@ -157,6 +157,37 @@
 		</div>
 	</div>
 
+	<div class="modal fade" id="assign-task-modal" tabindex="-1" aria-labelledby="assign-task-modal-title" aria-hidden="true">
+		<div class="modal-dialog">
+			<form class="modal-content" id="assign-task-form">
+
+				<div class="modal-header">
+					<h2 class="modal-title fs-5" id="assign-task-modal-title">Tilldela uppgift</h2>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Stäng"></button>
+				</div>
+
+				<div class="modal-body">
+					<input type="hidden" id="assign-task-id" name="id">
+
+					<div class="mb-3">
+						<label for="assign-task-member" class="form-label small">Medlem *</label>
+						<select class="form-select" id="assign-task-member" name="memberId" required>
+							<option value="" selected disabled>Välj medlem...</option>
+						</select>
+					</div>
+
+					<p id="form-error" class="small text-danger mb-0 d-none" role="alert"></p>
+				</div>
+
+				<div class="modal-footer">
+					<button type="button" class="btn btn-outline-dark" data-bs-dismiss="modal">Avbryt</button>
+					<button type="submit" id="assign-task-submit" class="btn btn-primary">Tilldela</button>
+				</div>
+
+			</form>
+		</div>
+	</div>
+
 	<script type="module" src="/src/main.ts"></script>
 </body>
 
