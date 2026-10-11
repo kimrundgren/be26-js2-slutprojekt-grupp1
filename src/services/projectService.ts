@@ -6,7 +6,7 @@ import { request } from "./api";
 const urlProject = `${BASE_URL}/projects.json`;
 
 export async function getAllProjects(): Promise<Project[]> {
-	// typen Record beskriver svaret från firebase, alltså ett objekt med id(string) som nyckel och projectdata som värde
+	// typen Record beskriver svaret från firebase, alltså ett objekt med id som nyckel och projectdata som värde
 	const data = await request<Record<string, ProjectData> | null>(urlProject);
 
 	if (!data) return [];
@@ -33,7 +33,7 @@ export async function addProject(
 	return new Project(result.name, { name, description, deadline, memberIds });
 }
 
-export async function getProjectId(id: string): Promise<Project | null> {
+export async function getProjectById(id: string): Promise<Project | null> {
 	const url = `${BASE_URL}/projects/${id}.json`;
 
 	const data = await request<ProjectData | null>(url);

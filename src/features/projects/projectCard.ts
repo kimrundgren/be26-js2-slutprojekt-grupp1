@@ -1,4 +1,6 @@
 import { Project } from "../../models/Project";
+import { DATE_FORMAT } from "../../constants";
+import { formatDate } from "../../utils/date";
 
 export function createProjectCard(project: Project): HTMLElement {
 	const mainDiv = document.createElement("div");
@@ -31,9 +33,9 @@ export function createProjectCard(project: Project): HTMLElement {
 
 	const deadline = document.createElement("span");
 	deadline.className = "badge bg-body-secondary text-body fw-normal";
-	deadline.textContent = project.getDeadline();
+	deadline.textContent = formatDate(project.getDeadline(), DATE_FORMAT);
 
-	// Sätter ihop allt, badges i childDiv, sen text och badges i cardbody
+	// Sätter ihop allt, badges i childDiv sen text och badges i cardbody
 	childDiv.append(members, ongoing, deadline);
 	cardBody.append(title, description, childDiv);
 	card.appendChild(cardBody);
