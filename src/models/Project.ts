@@ -19,7 +19,7 @@ export class Project {
 		return this.id;
 	}
 
-	getName() {
+	getName(): string {
 		return this.name;
 	}
 	getDescription(): string {

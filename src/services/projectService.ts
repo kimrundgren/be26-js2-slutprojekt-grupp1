@@ -25,9 +25,7 @@ export async function addProject(
 	deadline: string,
 	memberIds: string[],
 ): Promise<Project> {
-	const url = `${BASE_URL}/projects.json`;
-
-	const result = await request<{ name: string }>(url, {
+	const result = await request<{ name: string }>(urlProject, {
 		method: "POST",
 		headers: { "Content-Type": "application/json" },
 		body: JSON.stringify({ name, description, deadline, memberIds }),

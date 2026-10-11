@@ -1,4 +1,8 @@
-import { Task } from "../../models/Task";
+import { PRIORITY_LABELS, CATEGORY_LABELS, DATE_FORMAT } from "../../constants";
+
+import { formatDate } from "../../utils/date";
+
+import type { Task } from "../../models/Task";
 import type { TaskStatus, Priority } from "../../types/types";
 
 type TaskAction = "assign" | "edit" | "complete" | "delete";
@@ -23,54 +27,54 @@ const actionClasses: Record<TaskAction, string> = {
 	delete: "btn-outline-danger",
 };
 
-const priorityLabels: Record<Priority, string> = {
-	low: "Låg prioritet",
-	medium: "Medel prioritet",
-	high: "Hög prioritet",
-};
-
 const priorityClasses: Record<Priority, string> = {
 	low: "bg-success text-white",
 	medium: "bg-warning text-dark",
 	high: "bg-danger text-white",
 };
 
+// Skapar badges för kategori och prioritet
 function createBadges(task: Task): HTMLDivElement {
-	const badgesContainer = document.createElement("div");
-	badgesContainer.className = "d-flex gap-2 mb-2";
+	const badges = document.createElement("div");
+	badges.className = "d-flex gap-2 mb-3";
+
+	const category = task.getCategory();
+	const priority = task.getPriority();
 
 	const categoryBadge = document.createElement("span");
 	categoryBadge.className = "badge bg-body-secondary text-body fw-normal";
-	const categoryText = task.getCategory();
-	categoryBadge.textContent = categoryText.charAt(0).toUpperCase() + categoryText.slice(1);
+	categoryBadge.textContent = CATEGORY_LABELS[category];
 
 	const priorityBadge = document.createElement("span");
-	priorityBadge.className = `badge fw-normal ${priorityClasses[task.getPriority()]}`;
-	const priorityText = task.getPriority();
-	priorityBadge.textContent = priorityLabels[priorityText];
+	priorityBadge.className = `badge fw-normal ${priorityClasses[priority]}`;
+	priorityBadge.textContent = PRIORITY_LABELS[priority] + " prioritet";
 
-	badgesContainer.append(priorityBadge, categoryBadge);
+	badges.append(categoryBadge, priorityBadge);
 
-	return badgesContainer;
+	return badges;
 }
 
-function createActions(task: Task): HTMLDivElement {
-	const buttonsContainer = document.createElement("div");
-	buttonsContainer.className = "d-flex gap-2 mt-3";
+// Skapar tillgängliga action-knappar baserat på uppgiftens status
+function createActionButtons(task: Task): HTMLDivElement {
+	const actions = document.createElement("div");
+	actions.className = "d-flex gap-2 mt-3";
 
-	const taskActions = actionsByStatus[task.getStatus()];
+	const status = task.getStatus();
+	const taskActions = actionsByStatus[status];
 
 	for (const action of taskActions) {
 		const button = document.createElement("button");
 		button.className = `btn btn-sm ${actionClasses[action]}`;
 		button.textContent = actionLabels[action];
+		button.dataset.action = action;
 
-		buttonsContainer.append(button);
+		actions.append(button);
 	}
 
-	return buttonsContainer;
+	return actions;
 }
 
+// Bygger ett uppgiftskort med information och tillgängliga actions
 export function createTaskCard(task: Task): HTMLDivElement {
 	const card = document.createElement("div");
 	card.className = "card mb-2";
@@ -79,49 +83,42 @@ export function createTaskCard(task: Task): HTMLDivElement {
 	const cardBody = document.createElement("div");
 	cardBody.className = "card-body";
 
+	const status = task.getStatus();
+
 	const title = document.createElement("h3");
 	title.className = "h6 fw-bold";
 	title.textContent = task.getTitle();
 
 	const description = document.createElement("p");
-	description.className = "small text-muted";
+	description.className = "small text-body-secondary";
 	description.textContent = task.getDescription();
 
-	const badgesContainer = createBadges(task);
-	const buttonsContainer = createActions(task);
+	const badges = createBadges(task);
+	const actions = createActionButtons(task);
 
 	const created = document.createElement("div");
-	created.className = "small text-muted";
-	// TODO: Formatera datum och tid för visning.
-	created.textContent = `Skapad: ${task.getCreated()}`;
+	created.className = "small text-body-secondary";
+	created.textContent = `Skapad: ${formatDate(task.getCreated(), DATE_FORMAT)}`;
 
-	if (task.getStatus() === "done") {
-		// TODO: Formatera datum och tid för visning.
-		created.textContent += ` · Slutförd: ${task.getCompleted()}`;
+	const completed = task.getCompleted();
+
+	if (status === "done" && completed) {
+		created.textContent += ` · Slutförd: ${formatDate(completed, DATE_FORMAT)}`;
 	}
 
 	const deadline = document.createElement("div");
-	deadline.className = "small text-muted";
-	// TODO: Formatera datum och tid för visning.
-	deadline.textContent = "Deadline: " + task.getDeadline();
+	deadline.className = "small text-body-secondary";
+	deadline.textContent = "Deadline: " + formatDate(task.getDeadline(), DATE_FORMAT);
 
 	const assignedMember = document.createElement("div");
-	assignedMember.className = "small text-muted";
+	assignedMember.className = "small text-body-secondary";
 
-	// TODO: Visa medlemmens namn i stället för medlems-ID.
-	if (task.getStatus() !== "new") {
+	// TODO: hämta medlemslistan en gång, inte separat för varje kort. Plocka ut namn (Therese)
+	if (status !== "new") {
 		assignedMember.textContent = "Tilldelad: " + "{Förnamn Efternamn}";
 	}
 
-	cardBody.append(
-		badgesContainer,
-		title,
-		description,
-		assignedMember,
-		created,
-		deadline,
-		buttonsContainer,
-	);
+	cardBody.append(badges, title, description, assignedMember, created, deadline, actions);
 	card.append(cardBody);
 
 	return card;

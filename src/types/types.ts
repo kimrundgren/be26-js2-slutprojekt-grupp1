@@ -1,6 +1,9 @@
-export type Category = "frontend" | "backend" | "ux";
+import type { CATEGORIES, PRIORITIES } from "../constants";
+
+export type Category = (typeof CATEGORIES)[number];
 export type TaskStatus = "new" | "ongoing" | "done";
-export type Priority = "low" | "medium" | "high";
+export type Priority = (typeof PRIORITIES)[number];
+export type NoticeType = "success" | "error";
 
 export interface ProjectData {
 	name: string;

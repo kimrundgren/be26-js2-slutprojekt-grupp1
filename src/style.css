@@ -1,3 +1,9 @@
 html {
 	scrollbar-gutter: stable;
 }
+
+/* Alert message */
+#notice {
+	z-index: 2000;
+	width: min(90vw, 28rem);
+}

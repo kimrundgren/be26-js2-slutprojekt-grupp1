@@ -1,36 +1,44 @@
+import "bootstrap";
+
+import { getProjectId } from "./utils/urls";
+
 import { renderProjectList } from "./features/projects/projectList";
 import { renderProjectSummary } from "./features/projects/projectSummary";
+
 import { renderMemberList } from "./features/members/memberList";
+
+import { setupAddTaskForm } from "./features/tasks/addTaskForm";
+import { setupEditTaskForm } from "./features/tasks/editTaskForm";
+import { setupTaskBoard } from "./features/tasks/taskBoard";
 import { renderTaskBoard } from "./features/tasks/taskBoard";
+import { createProjectForm } from "./features/projects/projectForm";
 
 function initApp(): void {
-	// Läser vilken sida som är öppen från <body data-page="...">
-	// index.html har "index" och project.html har "project"
 	const page = document.body.dataset.page;
 
 	// Index, översiktsvy
 	if (page === "index") {
 		renderProjectList();
 		renderMemberList();
+		createProjectForm();
 	}
 
 	// Projektvy
 	if (page === "project") {
-		// Läser project-id från URL:en, tex. project.html?id=abs123 ger "abc123"
-		// get("id") returnerar null om parametern saknas
-		const projectId = new URLSearchParams(window.location.search).get("id");
+		const projectId = getProjectId();
 
-		// Utan id vet vi inte vilket projekt som ska visas, skicka tillbaka användaren till översikten
 		if (!projectId) {
 			window.location.href = "index.html";
 			return;
 		}
 
-		// Skickar id vidare så båda vyerna hämtar rätt projekt
+		setupTaskBoard();
+		setupAddTaskForm();
+		setupEditTaskForm();
+
 		renderProjectSummary(projectId);
 		renderTaskBoard(projectId);
 	}
 }
 
-// Startar app när filen laddas
 initApp();

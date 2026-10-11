@@ -1,74 +1,68 @@
 <!doctype html>
 <html lang="sv">
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>Slutprojekt - Grupp 1</title>
 
-		<link
-			rel="stylesheet"
-			href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
-		/>
-		<link rel="stylesheet" href="./src//style.css" />
-	</head>
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Slutprojekt - Grupp 1</title>
 
-	<body data-page="index">
-		<header class="bg-white border-bottom py-3">
-			<div class="container">
-				<span class="fs-4">Scrum Board</span>
-			</div>
-		</header>
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" />
+	<link rel="stylesheet" href="./src/style.css" />
+</head>
 
-		<main class="container py-5">
-			<div class="row g-4">
-				<!-- Projekt -->
-				<section class="col-lg-8">
-					<div class="d-flex justify-content-between align-items-center mb-3">
-						<h2 class="h4 mb-0">Projekt</h2>
-						<button class="btn btn-primary">+ Nytt projekt</button>
-					</div>
+<body data-page="index">
+	<div id="notice" class="alert position-fixed bottom-0 start-50 translate-middle-x mb-3 d-none" role="status"></div>
 
-					<div id="project-list" class="row g-3">
-						<!-- Dummykort, ersätts av JS -->
-						<div class="col-sm-6">
-							<div class="card">
-								<div class="card-body">
-									<h3 class="h5 fw-bold">Projektnamn</h3>
-									<p class="small text-muted">Kort beskrivning av projektet.</p>
-									<div class="d-flex gap-2 flex-wrap">
-										<span class="badge bg-body-secondary text-body fw-normal"
-											>3 medlemmar</span
-										>
-										<span class="badge bg-body-secondary text-body fw-normal"
-											>2 pågående</span
-										>
-										<span class="badge bg-body-secondary text-body fw-normal"
-											>2026-11-20</span
-										>
-									</div>
+	<header class="bg-white border-bottom py-3">
+		<div class="container">
+			<span class="fs-4">Scrum Board</span>
+		</div>
+	</header>
+
+	<main class="container py-5">
+		<div class="row g-4">
+			<!-- Projekt -->
+			<section class="col-lg-8">
+				<div class="d-flex justify-content-between align-items-center mb-3">
+					<h2 class="h4 mb-0">Projekt</h2>
+					<button id="new-project-button" class="btn btn-primary">+ Nytt projekt</button>
+				</div>
+
+				<div id="project-list" class="row g-3">
+					<!-- Dummykort, ersätts av JS -->
+					<div class="col-sm-6">
+						<div class="card">
+							<div class="card-body">
+								<h3 class="h5 fw-bold">Projektnamn</h3>
+								<p class="small text-muted">Kort beskrivning av projektet.</p>
+								<div class="d-flex gap-2 flex-wrap">
+									<span class="badge bg-body-secondary text-body fw-normal">3 medlemmar</span>
+									<span class="badge bg-body-secondary text-body fw-normal">2 pågående</span>
+									<span class="badge bg-body-secondary text-body fw-normal">2026-11-20</span>
 								</div>
 							</div>
 						</div>
 					</div>
-				</section>
+				</div>
+			</section>
 
-				<!-- Medlemmar -->
-				<section class="col-lg-4">
-					<div class="card">
-						<div class="card-body">
-							<div class="d-flex justify-content-between align-items-center mb-2">
-								<h2 class="h4 mb-0">Medlemmar</h2>
-								<button class="btn btn-outline-dark">+ Ny medlem</button>
-							</div>
-
-							<ul id="member-list" class="list-group list-group-flush"></ul>
+			<!-- Medlemmar -->
+			<section class="col-lg-4">
+				<div class="card">
+					<div class="card-body">
+						<div class="d-flex justify-content-between align-items-center mb-2">
+							<h2 class="h4 mb-0">Medlemmar</h2>
+							<button class="btn btn-outline-dark">+ Ny medlem</button>
 						</div>
-					</div>
-				</section>
-			</div>
-		</main>
 
-		<script type="module" src="/src/main.ts"></script>
-		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
-	</body>
+						<ul id="member-list" class="list-group list-group-flush"></ul>
+					</div>
+				</div>
+			</section>
+		</div>
+	</main>
+
+	<script type="module" src="/src/main.ts"></script>
+</body>
+
 </html>

@@ -20,6 +20,7 @@ export async function createProjectSummary(project: Project): Promise<HTMLElemen
 	const membersContainer = document.createElement("div");
 	membersContainer.className = "d-flex flex-wrap gap-2";
 
+	// Projektet har bara id på medlemmarna, så måste hämta alla medlemmar för att få namnen
 	const memberIds = project.getMemberIds();
 
 	if (memberIds.length === 0) {
@@ -45,6 +46,7 @@ export async function createProjectSummary(project: Project): Promise<HTMLElemen
 	return section;
 }
 
+// Hämtar projektet med id från urlen och byggar upp det i project summary
 export async function renderProjectSummary(projectId: string): Promise<void> {
 	const container = document.querySelector("#project-summary");
 
@@ -58,6 +60,6 @@ export async function renderProjectSummary(projectId: string): Promise<void> {
 		return;
 	}
 	const summary = await createProjectSummary(project);
-	container.innerHTML = "";
+	container.replaceChildren();
 	container.appendChild(summary);
 }

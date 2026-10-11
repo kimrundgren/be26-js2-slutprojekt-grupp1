@@ -1,102 +1,163 @@
 <!doctype html>
 <html lang="sv">
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>Slutprojekt - Grupp 1</title>
 
-		<link
-			rel="stylesheet"
-			href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
-		/>
-		<link rel="stylesheet" href="./src//style.css" />
-	</head>
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Slutprojekt - Grupp 1</title>
 
-	<body data-page="project">
-		<header class="bg-white border-bottom py-3">
-			<div class="container">
-				<span class="fs-4">Scrum Board</span>
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" />
+	<link rel="stylesheet" href="./src/style.css" />
+</head>
+
+<body data-page="project">
+	<div id="notice" class="alert position-fixed bottom-0 start-50 translate-middle-x mb-3 d-none" role="status"></div>
+
+	<header class="bg-white border-bottom py-3">
+		<div class="container">
+			<span class="fs-4">Scrum Board</span>
+		</div>
+	</header>
+
+	<main class="container py-5">
+		<a href="/" class="btn btn-outline-dark mb-4">← Översikt</a>
+
+		<div id="project-summary"></div>
+
+		<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
+			<div class="d-flex flex-wrap gap-2">
+				<select id="filter-category" class="form-select w-auto">
+					<option value="">Alla kategorier</option>
+					<option value="frontend">Frontend</option>
+					<option value="backend">Backend</option>
+					<option value="ux">UX</option>
+				</select>
+				<select id="filter-member" class="form-select w-auto">
+					<option value="">Alla medlemmar</option>
+				</select>
+				<select id="sort" class="form-select w-auto">
+					<option value="deadline-asc">Deadline stigande</option>
+					<option value="deadline-desc">Deadline fallande</option>
+					<option value="title-asc">Titel A → Ö</option>
+					<option value="title-desc">Titel Ö → A</option>
+				</select>
 			</div>
-		</header>
+			<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#add-task-modal">+ Ny uppgift</button>
+		</div>
 
-		<main class="container py-5">
-			<a href="index.html" class="btn btn-outline-dark mb-4">← Översikt</a>
-
-			<!-- Projekthuvud -->
-			<div id="project-summary"></div>
-			<!-- <section class="card mb-5">
-        <div class="card-body">
-          <h1 id="project-title" class="h4">Projektnamn</h1>
-          <p id="project-description" class="text-muted">
-            Beskrivning av projektet · Deadline 2026-11-20
-          </p>
-
-          <div id="project-members" class="d-flex flex-wrap gap-2">
-          
-            <span class="badge bg-body-secondary text-body fw-normal"
-              >Anna Svensson · Frontend · 1 pågående</span
-            >
-            <span class="badge bg-body-secondary text-body fw-normal"
-              >Anna Svensson · Frontend · 1 pågående</span
-            >
-            <span class="badge bg-body-secondary text-body fw-normal"
-              >Anna Svensson · Frontend · 1 pågående</span
-            >
-          </div>
-        </div>
-      </section> -->
-
-			<!-- Filter, sortering, ny uppgift -->
-			<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
-				<div class="d-flex flex-wrap gap-2">
-					<select id="filter-category" class="form-select w-auto">
-						<option value="">Alla kategorier</option>
-						<option value="frontend">Frontend</option>
-						<option value="backend">Backend</option>
-						<option value="ux">UX</option>
-					</select>
-					<select id="filter-member" class="form-select w-auto">
-						<option value="">Alla medlemmar</option>
-					</select>
-					<select id="sort" class="form-select w-auto">
-						<option value="deadline-asc">Deadline stigande</option>
-						<option value="deadline-desc">Deadline fallande</option>
-						<option value="title-asc">Titel A → Ö</option>
-						<option value="title-desc">Titel Ö → A</option>
-					</select>
+		<div id="task-board" class="row g-3">
+			<section class="col-md-4">
+				<div class="bg-body-secondary rounded p-3">
+					<h2 class="h6">Ny (<span id="count-new">0</span>)</h2>
+					<div id="column-new"></div>
 				</div>
-				<button class="btn btn-primary">+ Ny uppgift</button>
-			</div>
+			</section>
 
-			<!-- Task board -->
-			<div class="row g-3">
-				<section class="col-md-4">
-					<div class="bg-body-secondary rounded p-3">
-						<h2 class="h6">Ny (<span id="count-new">1</span>)</h2>
-						<!-- Task cards are rendered dynamically via JavaScript -->
-						<div id="column-new"></div>
+			<section class="col-md-4">
+				<div class="bg-body-secondary rounded p-3">
+					<h2 class="h6">Pågående (<span id="count-ongoing">0</span>)</h2>
+					<div id="column-ongoing"></div>
+				</div>
+			</section>
+
+			<section class="col-md-4">
+				<div class="bg-body-secondary rounded p-3">
+					<h2 class="h6">Slutförd (<span id="count-done">0</span>)</h2>
+					<div id="column-done"></div>
+				</div>
+			</section>
+		</div>
+	</main>
+
+	<div class="modal fade" id="add-task-modal" tabindex="-1" aria-labelledby="add-task-modal-title" aria-hidden="true">
+		<div class="modal-dialog">
+			<form class="modal-content" id="add-task-form">
+
+				<div class="modal-header">
+					<h2 class="modal-title fs-5" id="add-task-modal-title">Lägg till uppgift</h2>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Stäng"></button>
+				</div>
+
+				<div class="modal-body">
+					<p>Fält markerade med * är obligatoriska.</p>
+					<div class="mb-3">
+						<label for="add-task-title" class="form-label small">Titel *</label>
+						<input type="text" class="form-control" id="add-task-title" name="title" required>
 					</div>
-				</section>
 
-				<section class="col-md-4">
-					<div class="bg-body-secondary rounded p-3">
-						<h2 class="h6">Pågående (<span id="count-ongoing">1</span>)</h2>
-						<!-- Task cards are rendered dynamically via JavaScript -->
-						<div id="column-ongoing"></div>
+					<div class="mb-3">
+						<label for="add-task-description" class="form-label small">Beskrivning *</label>
+						<textarea class="form-control" id="add-task-description" name="description" required></textarea>
 					</div>
-				</section>
 
-				<section class="col-md-4">
-					<div class="bg-body-secondary rounded p-3">
-						<h2 class="h6">Slutförd (<span id="count-done">1</span>)</h2>
-						<!-- Task cards are rendered dynamically via JavaScript -->
-						<div id="column-done"></div>
+					<div class="mb-3">
+						<label for="add-task-category" class="form-label small">Kategori *</label>
+						<select class="form-select" id="add-task-category" name="category" required>
+							<option value="" selected disabled>Välj kategori...</option>
+						</select>
 					</div>
-				</section>
-			</div>
-		</main>
 
-		<script type="module" src="/src/main.ts"></script>
-		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
-	</body>
+					<div class="mb-3">
+						<label for="add-task-priority" class="form-label small">Prioritet *</label>
+						<select class="form-select" id="add-task-priority" name="priority" required>
+							<option value="" selected disabled>Välj prioritet...</option>
+						</select>
+					</div>
+
+					<div class="mb-3">
+						<label for="add-task-deadline" class="form-label small">Deadline *</label>
+						<input type="date" class="form-control" id="add-task-deadline" name="deadline" required>
+					</div>
+
+					<p id="form-error" class="small text-danger mb-0 d-none" role="alert"></p>
+				</div>
+
+				<div class="modal-footer">
+					<button type="button" class="btn btn-outline-dark" data-bs-dismiss="modal">Avbryt</button>
+					<button type="submit" id="add-task-submit" class="btn btn-primary">Lägg till uppgift</button>
+				</div>
+
+			</form>
+		</div>
+	</div>
+
+	<div class="modal fade" id="edit-task-modal" tabindex="-1" aria-labelledby="add-task-modal-title" aria-hidden="true">
+		<div class="modal-dialog">
+			<form class="modal-content" id="edit-task-form">
+
+				<div class="modal-header">
+					<h2 class="modal-title fs-5" id="add-task-modal-title">Redigera uppgift</h2>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Stäng"></button>
+				</div>
+
+				<div class="modal-body">
+					<input type="hidden" id="edit-task-id" name="id">
+
+					<div class="mb-3">
+						<label for="edit-task-priority" class="form-label small">Prioritet</label>
+						<select class="form-select" id="edit-task-priority" name="priority">
+							<option value="" selected disabled>Välj prioritet...</option>
+						</select>
+					</div>
+
+					<div class="mb-3">
+						<label for="edit-task-deadline" class="form-label small">Deadline</label>
+						<input type="date" class="form-control" id="edit-task-deadline" name="deadline">
+					</div>
+
+					<p id="form-error" class="small text-danger mb-0 d-none" role="alert"></p>
+				</div>
+
+				<div class="modal-footer">
+					<button type="button" class="btn btn-outline-dark" data-bs-dismiss="modal">Avbryt</button>
+					<button type="submit" id="edit-task-submit" class="btn btn-primary">Spara ändringar</button>
+				</div>
+
+			</form>
+		</div>
+	</div>
+
+	<script type="module" src="/src/main.ts"></script>
+</body>
+
 </html>
