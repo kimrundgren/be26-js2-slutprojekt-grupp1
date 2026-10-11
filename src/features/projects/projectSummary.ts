@@ -1,6 +1,8 @@
-import { getProjectId } from "../../services/projectService.ts";
-import { Project } from "../../models/Project.ts";
-import { getAllMembers } from "../../services/memberService.ts";
+import { getProjectById } from "../../services/projectService";
+import { Project } from "../../models/Project";
+import { getAllMembers } from "../../services/memberService";
+import { formatDate } from "../../utils/date";
+import { DATE_FORMAT } from "../../constants";
 
 export async function createProjectSummary(project: Project): Promise<HTMLElement> {
 	const section = document.createElement("section");
@@ -15,7 +17,7 @@ export async function createProjectSummary(project: Project): Promise<HTMLElemen
 
 	const description = document.createElement("p");
 	description.className = "text-muted";
-	description.textContent = `${project.getDescription()} Deadline ${project.getDeadline()}`;
+	description.textContent = `${project.getDescription()} Deadline ${formatDate(project.getDeadline(), DATE_FORMAT)}`;
 
 	const membersContainer = document.createElement("div");
 	membersContainer.className = "d-flex flex-wrap gap-2";
@@ -53,7 +55,7 @@ export async function renderProjectSummary(projectId: string): Promise<void> {
 	if (!container) {
 		return;
 	}
-	const project = await getProjectId(projectId);
+	const project = await getProjectById(projectId);
 
 	if (!project) {
 		container.textContent = "Projektet kunde inte hittas";
