@@ -50,7 +50,14 @@
 						<div class="card-body">
 							<div class="d-flex justify-content-between align-items-center mb-2">
 								<h2 class="h4 mb-0">Medlemmar</h2>
-								<button class="btn btn-outline-dark">+ Ny medlem</button>
+								<button
+									type="button"
+									class="btn btn-outline-dark"
+									data-bs-toggle="modal"
+									data-bs-target="#new-member-modal"
+								>
+									+ Ny medlem
+								</button>
 							</div>
 
 							<ul id="member-list" class="list-group list-group-flush"></ul>
@@ -140,6 +147,60 @@
 							Avbryt
 						</button>
 						<button type="submit" class="btn btn-primary">Skapa projekt</button>
+					</div>
+				</form>
+			</div>
+		</div>
+
+		<div
+			class="modal fade"
+			id="new-member-modal"
+			tabindex="-1"
+			aria-labelledby="new-member-title"
+			aria-hidden="true"
+		>
+			<div class="modal-dialog">
+				<form class="modal-content" id="new-member-form">
+					<div class="modal-header">
+						<h2 class="modal-title fs-5" id="new-member-title">Lägg till medlem</h2>
+						<button
+							type="button"
+							class="btn-close"
+							data-bs-dismiss="modal"
+							aria-label="Stäng"
+						></button>
+					</div>
+
+					<div class="modal-body">
+						<div class="mb-3">
+							<label for="member-name" class="form-label small">Namn *</label>
+							<input
+								type="text"
+								class="form-control"
+								id="member-name"
+								name="name"
+								required
+							/>
+						</div>
+
+						<div class="mb-3">
+							<label for="member-category" class="form-label small">Kategori *</label>
+							<select
+								class="form-select"
+								id="member-category"
+								name="category"
+								required
+							></select>
+						</div>
+
+						<p id="member-error" class="small text-danger mb-0 d-none" role="alert"></p>
+					</div>
+
+					<div class="modal-footer">
+						<button type="button" class="btn btn-outline-dark" data-bs-dismiss="modal">
+							Avbryt
+						</button>
+						<button type="submit" class="btn btn-primary">Lägg till medlem</button>
 					</div>
 				</form>
 			</div>

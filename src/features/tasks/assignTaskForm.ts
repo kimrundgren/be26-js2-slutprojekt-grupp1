@@ -1,14 +1,11 @@
 import { Modal } from "bootstrap";
-
 import { renderNotice } from "../../components/notice";
 import { renderFormError, clearFormError } from "../../components/formError";
 import { getAllMembers } from "../../services/memberService";
 import { updateTask } from "../../services/taskService";
 import { createSelectOption } from "../../utils/dom";
-
 import type { Task } from "../../models/Task";
 import type { TaskData } from "../../types/types";
-
 import { updateTaskOnBoard } from "./taskBoard";
 
 // Initierar formuläret och dess händelsehantering
