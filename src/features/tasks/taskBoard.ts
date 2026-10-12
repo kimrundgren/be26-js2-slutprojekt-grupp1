@@ -7,6 +7,13 @@ import { handleEditTask } from "./editTaskForm";
 import { handleAssignTask } from "./assignTaskForm";
 import type { Task } from "../../models/Task";
 import type { Member } from "../../models/Member";
+import {
+	filterTasks,
+	sortTasks,
+	getFilterValues,
+	setupTaskFilters,
+	renderMemberFilter,
+} from "./taskFilter";
 
 import { clearElements } from "../../utils/dom";
 import type { TaskData } from "../../types/types";
@@ -22,7 +29,7 @@ export function setupTaskBoard(): void {
 		console.error("setupTaskBoard: saknar #task-board i HMTL");
 		return;
 	}
-
+	setupTaskFilters(renderTasks);
 	taskBoard.addEventListener("click", handleTaskBoardClick);
 }
 
@@ -98,7 +105,7 @@ async function handleCompleteTask(taskId: string): Promise<void> {
 export async function renderTaskBoard(projectId: string): Promise<void> {
 	try {
 		[tasks, members] = await Promise.all([getTasksByProject(projectId), getAllMembers()]);
-
+		renderMemberFilter(members);
 		renderTasks();
 		clearNotice();
 	} catch (error) {
@@ -126,7 +133,11 @@ function renderTasks(): void {
 
 	clearElements([newColumn, ongoingColumn, doneColumn]);
 
-	for (const task of tasks) {
+	const { category, memberId, sort } = getFilterValues();
+	const filteredTasks = filterTasks(tasks, category, memberId);
+	const visibleTasks = sortTasks(filteredTasks, sort);
+
+	for (const task of visibleTasks) {
 		const card = createTaskCard(task, members);
 		const column = columns[task.getStatus()];
 
