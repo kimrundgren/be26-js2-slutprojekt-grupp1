@@ -1,13 +1,11 @@
 import type { Member } from "../../models/Member";
-import type { Category } from "../../types/types";
+import { CATEGORY_LABELS } from "../../constants";
 
-const categoryLabels: Record<Category, string> = {
-	frontend: "Frontend",
-	backend: "Backend",
-	ux: "UX",
-};
-
-export function createMemberCard(member: Member): HTMLLIElement {
+export function createMemberCard(
+	member: Member,
+	projectNames: string[],
+	ongoingCount: number,
+): HTMLLIElement {
 	const li = document.createElement("li");
 	li.className = "list-group-item d-flex gap-3 px-0";
 
@@ -26,9 +24,17 @@ export function createMemberCard(member: Member): HTMLLIElement {
 
 	const badge = document.createElement("span");
 	badge.className = "badge bg-body-secondary text-body fw-normal";
-	badge.textContent = categoryLabels[member.getCategory()];
+	badge.textContent = CATEGORY_LABELS[member.getCategory()];
 
-	info.append(name, " ", badge);
+	const projectLine = document.createElement("div");
+	projectLine.className = "small text-muted";
+	projectLine.textContent = projectNames.length > 0 ? projectNames.join(", ") : "Inga projekt";
+
+	const ongoingLine = document.createElement("span");
+	ongoingLine.className = "badge bg-body-secondary text-body fw-normal";
+	ongoingLine.textContent = `${ongoingCount} pågående uppgifter`;
+
+	info.append(name, " ", badge, projectLine, ongoingLine);
 	li.append(avatar, info);
 
 	return li;

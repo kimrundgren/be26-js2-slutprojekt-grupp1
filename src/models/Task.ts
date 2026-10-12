@@ -23,6 +23,7 @@ export class Task {
 		this.status = data.status;
 		this.priority = data.priority;
 		this.deadline = data.deadline;
+		this.memberId = data.memberId;
 	}
 
 	getId(): string {
@@ -83,5 +84,9 @@ export class Task {
 
 	getAssignedMember(): string | undefined {
 		return this.memberId;
+	}
+
+	setAssignedMember(memberId: string): void {
+		this.memberId = memberId;
 	}
 }
