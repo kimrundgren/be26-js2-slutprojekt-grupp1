@@ -2,7 +2,10 @@ import { getProjectById } from "../../services/projectService";
 import { Project } from "../../models/Project";
 import { getAllMembers } from "../../services/memberService";
 import { formatDate } from "../../utils/date";
-import { DATE_FORMAT } from "../../constants";
+import { DATE_FORMAT, CATEGORY_LABELS } from "../../constants";
+import { renderNotice } from "../../components/notice";
+import { getTasksByProject } from "../../services/taskService";
+import type { Member } from "../../models/Member";
 
 export async function createProjectSummary(project: Project): Promise<HTMLElement> {
 	const section = document.createElement("section");
@@ -28,18 +31,23 @@ export async function createProjectSummary(project: Project): Promise<HTMLElemen
 	if (memberIds.length === 0) {
 		membersContainer.textContent = "Inga medlemmar";
 	} else {
-		const members = await getAllMembers();
-		console.log(project);
+		const [members, tasks] = await Promise.all([
+			getAllMembers(),
+			getTasksByProject(project.getId()),
+		]);
 
 		for (const memberId of memberIds) {
 			const member = members.find((member) => member.getId() === memberId);
 
 			if (!member) continue;
 
-			const badge = document.createElement("span");
-			badge.className = "badge bg-body-secondary text-body fw-normal";
-			badge.textContent = member.getName();
-			membersContainer.appendChild(badge);
+			const ongoingCount = tasks.filter(function (task) {
+				return (
+					task.getAssignedMember() === member.getId() && task.getStatus() === "ongoing"
+				);
+			}).length;
+
+			membersContainer.appendChild(createMemberItem(member, ongoingCount));
 		}
 	}
 	cardBody.append(title, description, membersContainer);
@@ -48,20 +56,49 @@ export async function createProjectSummary(project: Project): Promise<HTMLElemen
 	return section;
 }
 
-// Hämtar projektet med id från urlen och byggar upp det i project summary
+// Hämtar projektet med id från urlen och bygger upp det i project summary
 export async function renderProjectSummary(projectId: string): Promise<void> {
 	const container = document.querySelector("#project-summary");
 
 	if (!container) {
 		return;
 	}
-	const project = await getProjectById(projectId);
-
-	if (!project) {
-		container.textContent = "Projektet kunde inte hittas";
-		return;
+	try {
+		const project = await getProjectById(projectId);
+		// Ingen krasch, men inget projekt med det id:t finns i databasen
+		if (!project) {
+			container.textContent = "Projektet kunde inte hittas";
+			return;
+		}
+		const summary = await createProjectSummary(project);
+		container.replaceChildren();
+		container.appendChild(summary);
+	} catch (error) {
+		// Nätverksfel eller databasfel, visa något i stället för en tom ruta
+		container.textContent = "Det gick inte att hämta projektet.";
+		renderNotice("Det gick inte att hämta projektet. Försök igen senare.", "error");
+		console.error("Kunde inte hämta projektet:", error);
 	}
-	const summary = await createProjectSummary(project);
-	container.replaceChildren();
-	container.appendChild(summary);
+}
+
+// Bygger en rad med namn, kategori och antal pågående
+function createMemberItem(member: Member, ongoingCount: number): HTMLElement {
+	const item = document.createElement("div");
+	item.className = "d-flex align-items-center gap-1";
+
+	const name = document.createElement("span");
+	name.className = "fw-bold";
+	name.textContent = member.getName();
+
+	const category = document.createElement("span");
+	category.className = "badge bg-body-secondary text-body fw-normal";
+	category.textContent = CATEGORY_LABELS[member.getCategory()];
+
+	const ongoing = document.createElement("span");
+	ongoing.className = "badge bg-body-secondary text-body fw-normal";
+	ongoing.textContent = `${ongoingCount} pågående`;
+
+	item.append(name, category, ongoing);
+
+	return item;
 }

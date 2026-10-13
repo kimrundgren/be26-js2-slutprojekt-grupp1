@@ -5,6 +5,7 @@ import { getAllProjects } from "../../services/projectService";
 import { getTasksByProject } from "../../services/taskService";
 import { createMemberCard } from "./memberCard";
 
+// Cached in module scope so addMemberToList can update the UI without refetching everything from Firebase
 let members: Member[] = [];
 let projects: Project[] = [];
 
@@ -45,13 +46,11 @@ async function buildMemberList(): Promise<void> {
 	container.replaceChildren(...cards);
 }
 
-// Hämtar medlemmarna och projekten från firebase och bygger ut listan, körs när index laddas
 export async function renderMemberList(): Promise<void> {
 	[members, projects] = await Promise.all([getAllMembers(), getAllProjects()]);
 	await buildMemberList();
 }
 
-// Används av formuläret, lägger till den nya medlemmen och bygger om listan
 export async function addMemberToList(member: Member): Promise<void> {
 	members.push(member);
 	await buildMemberList();
