@@ -6,7 +6,7 @@ import { renderFormError, clearFormError } from "../../components/formError";
 import { createSelectOption } from "../../utils/dom";
 import { addProjectToList } from "./projectList";
 
-export async function createProjectForm(): Promise<void> {
+export async function setupProjectForm(): Promise<void> {
 	const modal = document.querySelector<HTMLDivElement>("#new-project-modal");
 	const form = document.querySelector<HTMLFormElement>("#new-project-form");
 	const nameInput = document.querySelector<HTMLInputElement>("#project-name");
@@ -24,7 +24,7 @@ export async function createProjectForm(): Promise<void> {
 		!memberSelect ||
 		!formError
 	) {
-		console.error("createProjectForm: saknar element i HTML");
+		console.error("setupProjectForm: saknar element i HTML");
 		return;
 	}
 

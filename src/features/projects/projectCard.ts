@@ -2,7 +2,7 @@ import { Project } from "../../models/Project";
 import { DATE_FORMAT } from "../../constants";
 import { formatDate } from "../../utils/date";
 
-export function createProjectCard(project: Project): HTMLElement {
+export function createProjectCard(project: Project, ongoingCount: number): HTMLElement {
 	const mainDiv = document.createElement("div");
 	mainDiv.className = "col-sm-6";
 
@@ -29,7 +29,7 @@ export function createProjectCard(project: Project): HTMLElement {
 
 	const ongoing = document.createElement("span");
 	ongoing.className = "badge bg-body-secondary text-body fw-normal";
-	ongoing.textContent = "0 pågående";
+	ongoing.textContent = `${ongoingCount} pågående`;
 
 	const deadline = document.createElement("span");
 	deadline.className = "badge bg-body-secondary text-body fw-normal";
