@@ -12,7 +12,7 @@ import { setupAddTaskForm } from "./features/tasks/addTaskForm";
 import { setupEditTaskForm } from "./features/tasks/editTaskForm";
 import { setupTaskBoard } from "./features/tasks/taskBoard";
 import { renderTaskBoard } from "./features/tasks/taskBoard";
-import { createProjectForm } from "./features/projects/projectForm";
+import { setupProjectForm } from "./features/projects/projectForm";
 import { setupAssignForm } from "./features/tasks/assignTaskForm";
 
 function initApp(): void {
@@ -22,7 +22,7 @@ function initApp(): void {
 	if (page === "index") {
 		renderProjectList();
 		renderMemberList();
-		createProjectForm();
+		setupProjectForm();
 		createMemberForm();
 	}
 
