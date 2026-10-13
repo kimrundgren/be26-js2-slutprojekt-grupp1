@@ -34,7 +34,12 @@ const priorityClasses: Record<Priority, string> = {
 	high: "bg-danger text-white",
 };
 
-// Skapar badges för kategori och prioritet
+/**
+ * Creates badges for the task category and priority.
+ *
+ * @param task - The task to display.
+ * @returns The HTML element containing the badges.
+ */
 function createBadges(task: Task): HTMLDivElement {
 	const badges = document.createElement("div");
 	badges.className = "d-flex gap-2 mb-3";
@@ -55,7 +60,12 @@ function createBadges(task: Task): HTMLDivElement {
 	return badges;
 }
 
-// Skapar tillgängliga action-knappar baserat på uppgiftens status
+/**
+ * Creates action buttons based on the task status.
+ *
+ * @param task - The task used to determine available actions.
+ * @returns The HTML element containing the action buttons.
+ */
 function createActionButtons(task: Task): HTMLDivElement {
 	const actions = document.createElement("div");
 	actions.className = "d-flex gap-2 mt-3";
@@ -75,7 +85,13 @@ function createActionButtons(task: Task): HTMLDivElement {
 	return actions;
 }
 
-// Bygger ett uppgiftskort med information och tillgängliga actions
+/**
+ * Creates a task card with task details and available actions.
+ *
+ * @param task - The task to display.
+ * @param members - The project members used to display the assigned member.
+ * @returns The HTML element containing the task card.
+ */
 export function createTaskCard(task: Task, members: Member[]): HTMLDivElement {
 	const card = document.createElement("div");
 	card.className = "card mb-2";
