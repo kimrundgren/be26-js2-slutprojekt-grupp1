@@ -1,5 +1,8 @@
 import type { TaskData, Category, Priority, TaskStatus } from "../types/types";
 
+/**
+ * Represents a task in the project.
+ */
 export class Task {
 	private readonly id: string;
 	private readonly created: string;
@@ -23,6 +26,7 @@ export class Task {
 		this.status = data.status;
 		this.priority = data.priority;
 		this.deadline = data.deadline;
+		this.completed = data.completed;
 		this.memberId = data.memberId;
 	}
 
@@ -54,7 +58,7 @@ export class Task {
 		return this.status;
 	}
 
-	setStatus(newStatus: TaskStatus) {
+	setStatus(newStatus: TaskStatus): void {
 		this.status = newStatus;
 	}
 
@@ -62,7 +66,7 @@ export class Task {
 		return this.priority;
 	}
 
-	setPriority(newPriority: Priority) {
+	setPriority(newPriority: Priority): void {
 		this.priority = newPriority;
 	}
 
@@ -70,7 +74,7 @@ export class Task {
 		return this.deadline;
 	}
 
-	setDeadline(newDeadline: string) {
+	setDeadline(newDeadline: string): void {
 		this.deadline = newDeadline;
 	}
 
@@ -78,7 +82,7 @@ export class Task {
 		return this.completed;
 	}
 
-	setCompleted(newCompleted: string) {
+	setCompleted(newCompleted: string): void {
 		this.completed = newCompleted;
 	}
 
