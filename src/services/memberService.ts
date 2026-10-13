@@ -17,6 +17,7 @@ export async function getAllMembers(): Promise<Member[]> {
 	return members;
 }
 
+// Firebase's POST response field "name" is actually the generated id, not the member's name — don't confuse it with the name parameter above
 export async function addMember(name: string, category: Category): Promise<Member> {
 	const url = `${BASE_URL}/members.json`;
 
