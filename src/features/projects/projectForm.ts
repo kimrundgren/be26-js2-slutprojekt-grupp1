@@ -28,7 +28,7 @@ export async function setupProjectForm(): Promise<void> {
 		return;
 	}
 
-	// Tömmer formulär när modalen stängs
+	// Empties the form when the modal closes
 	modal.addEventListener("hidden.bs.modal", function () {
 		form.reset();
 		clearFormError(formError);
@@ -61,11 +61,11 @@ export async function setupProjectForm(): Promise<void> {
 		}
 	});
 
-	await fillMemberSelect(memberSelect, formError);
+	await renderMemberSelect(memberSelect, formError);
 }
 
-// Hämtar medlemmarna från firebase och gör att man kan välja dem i select
-async function fillMemberSelect(
+// Gets the members from firebase and adds them to the select, so you can pick them
+async function renderMemberSelect(
 	memberSelect: HTMLSelectElement,
 	formError: HTMLParagraphElement,
 ): Promise<void> {
@@ -81,7 +81,7 @@ async function fillMemberSelect(
 	}
 }
 
-// Går igenom medlemmarna som är markerade och sparar deras id
+// Goes through the selected members and returns their ids
 function getSelectedMemberIds(memberSelect: HTMLSelectElement): string[] {
 	const memberIds: string[] = [];
 
@@ -90,7 +90,7 @@ function getSelectedMemberIds(memberSelect: HTMLSelectElement): string[] {
 	}
 	return memberIds;
 }
-// Lägger till projektets id i projectIds hos varje vald medlem
+// Adds the project id to projectIds on every selected member
 async function addProjectToMembers(projectId: string, memberIds: string[]): Promise<void> {
 	const members = await getAllMembers();
 	const selectedMembers = members.filter((member) => memberIds.includes(member.getId()));

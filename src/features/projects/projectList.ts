@@ -5,10 +5,11 @@ import { getTasksByProject } from "../../services/taskService";
 import { renderNotice } from "../../components/notice";
 
 let projects: Project[] = [];
-//Kopplar projektets id till antal pågående uppgifter
+// Maps each project id to its number of ongoing tasks
 let ongoingCounts: Record<string, number> = {};
 
-export function buildProjectList() {
+// Draws a card for every project
+export function renderProjectCards() {
 	const container = document.querySelector("#project-list");
 
 	if (!container) {
@@ -24,31 +25,28 @@ export function buildProjectList() {
 		const ongoingCount = ongoingCounts[project.getId()] ?? 0;
 		const card = createProjectCard(project, ongoingCount);
 
-		card.addEventListener("click", function () {
-			window.location.href = `project.html?id=${project.getId()}`;
-		});
 		container.appendChild(card);
 	}
 }
-// Hämtar projekten från firebase och bygger ut dem, körs när index laddas
+// Gets the projects from firebase and shows them on the page. Runs when index.html loads
 export async function renderProjectList(): Promise<void> {
 	try {
 		projects = await getAllProjects();
 		ongoingCounts = await getOngoingCounts(projects);
-		buildProjectList();
+		renderProjectCards();
 	} catch (error) {
 		renderNotice("Det gick inte att hämta projekten. Försök igen senare.", "error");
 		console.error("Kunde inte hämta projekten:", error);
 	}
 }
 
-// Används av formuläret, lägger till det nya projektet och bygger om.
+// Adds the new project to the list, then draws all the cards again
 export function addProjectToList(project: Project): void {
 	projects.push(project);
-	buildProjectList();
+	renderProjectCards();
 }
 
-// Räknar pågående uppgifter för ett projekt
+// Counts ongoing tasks for one project
 async function getOngoingCount(project: Project): Promise<number> {
 	const tasks = await getTasksByProject(project.getId());
 
@@ -59,12 +57,10 @@ async function getOngoingCount(project: Project): Promise<number> {
 	return ongoingTasks.length;
 }
 
-// Räknar pågående uppgifter för alla projekt
+// Counts ongoing tasks for every project
 async function getOngoingCounts(projects: Project[]): Promise<Record<string, number>> {
 	const counts: Record<string, number> = {};
 
-	//Map startar en hämtning per projekt och alla körs samtidigt
-	//Därför behövs promise.all, för det gör så att hämtningarna väntar tills alla är klara innan koden körs vidare
 	await Promise.all(
 		projects.map(async function (project) {
 			counts[project.getId()] = await getOngoingCount(project);

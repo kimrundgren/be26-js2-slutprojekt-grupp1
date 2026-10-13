@@ -2,12 +2,14 @@ import { Project } from "../../models/Project";
 import { DATE_FORMAT } from "../../constants";
 import { formatDate } from "../../utils/date";
 
+//Builds one project card
 export function createProjectCard(project: Project, ongoingCount: number): HTMLElement {
 	const mainDiv = document.createElement("div");
 	mainDiv.className = "col-sm-6";
 
-	const card = document.createElement("div");
-	card.className = "card";
+	const card = document.createElement("a");
+	card.className = "card text-decoration-none text-reset";
+	card.href = `project.html?id=${project.getId()}`;
 
 	const cardBody = document.createElement("div");
 	cardBody.className = "card-body";
@@ -35,7 +37,6 @@ export function createProjectCard(project: Project, ongoingCount: number): HTMLE
 	deadline.className = "badge bg-body-secondary text-body fw-normal";
 	deadline.textContent = formatDate(project.getDeadline(), DATE_FORMAT);
 
-	// Sätter ihop allt, badges i childDiv sen text och badges i cardbody
 	childDiv.append(members, ongoing, deadline);
 	cardBody.append(title, description, childDiv);
 	card.appendChild(cardBody);

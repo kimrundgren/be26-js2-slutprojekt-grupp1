@@ -7,6 +7,7 @@ import { renderNotice } from "../../components/notice";
 import { getTasksByProject } from "../../services/taskService";
 import type { Member } from "../../models/Member";
 
+// Builds summary with the project's name, description and members
 export async function createProjectSummary(project: Project): Promise<HTMLElement> {
 	const section = document.createElement("section");
 	section.className = "card mb-5";
@@ -25,7 +26,6 @@ export async function createProjectSummary(project: Project): Promise<HTMLElemen
 	const membersContainer = document.createElement("div");
 	membersContainer.className = "d-flex flex-wrap gap-2";
 
-	// Projektet har bara id på medlemmarna, så måste hämta alla medlemmar för att få namnen
 	const memberIds = project.getMemberIds();
 
 	if (memberIds.length === 0) {
@@ -56,7 +56,7 @@ export async function createProjectSummary(project: Project): Promise<HTMLElemen
 	return section;
 }
 
-// Hämtar projektet med id från urlen och bygger upp det i project summary
+// Gets the project from the id in the url and shows it in the project.summary
 export async function renderProjectSummary(projectId: string): Promise<void> {
 	const container = document.querySelector("#project-summary");
 
@@ -65,7 +65,6 @@ export async function renderProjectSummary(projectId: string): Promise<void> {
 	}
 	try {
 		const project = await getProjectById(projectId);
-		// Ingen krasch, men inget projekt med det id:t finns i databasen
 		if (!project) {
 			container.textContent = "Projektet kunde inte hittas";
 			return;
@@ -74,14 +73,13 @@ export async function renderProjectSummary(projectId: string): Promise<void> {
 		container.replaceChildren();
 		container.appendChild(summary);
 	} catch (error) {
-		// Nätverksfel eller databasfel, visa något i stället för en tom ruta
 		container.textContent = "Det gick inte att hämta projektet.";
 		renderNotice("Det gick inte att hämta projektet. Försök igen senare.", "error");
 		console.error("Kunde inte hämta projektet:", error);
 	}
 }
 
-// Bygger en badge med namn, kategori och antal pågående uppgifter
+// Builds a small badge with the member's name, category and ongoing tasks
 function createMemberBadge(member: Member, ongoingCount: number): HTMLElement {
 	const badge = document.createElement("span");
 	badge.className = "badge bg-body-secondary text-body fw-normal";
