@@ -1,19 +1,17 @@
-// Hjälpfunktion för alla API-anrop
-// Tar emot URL och options och returnerar svaret som JSON
+/**
+ * Sends an API request and returns the response as JSON.
+ *
+ * @param url - The URL to send the request to.
+ * @param options - Optional fetch configuration.
+ * @returns The parsed JSON response.
+ * @throws An error if the request fails or the response is unsuccessful.
+ */
+export async function request<T>(url: string, options?: RequestInit): Promise<T> {
+	const response = await fetch(url, options);
 
-export async function request<Type>(url: string, options?: RequestInit): Promise<Type> {
-	try {
-		const response = await fetch(url, options);
-
-		// Hantera HTTP-fel från servern
-		if (!response.ok) {
-			throw new Error(`HTTP-fel: ${response.status}`);
-		}
-
-		return await response.json();
-	} catch (error) {
-		// Logga nätverksfel och andra fel för felsökning
-		console.error("Fel vid API-anrop:", error);
-		throw error;
+	if (!response.ok) {
+		throw new Error(`API request failed with status ${response.status}`);
 	}
+
+	return response.json();
 }
