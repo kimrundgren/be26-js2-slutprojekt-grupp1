@@ -1,5 +1,5 @@
 import { renderNotice, clearNotice } from "../../components/notice";
-
+import { getProjectById } from "../../services/projectService";
 import { getTasksByProject, deleteTask, updateTask } from "../../services/taskService";
 import { getAllMembers } from "../../services/memberService";
 import { createTaskCard } from "./taskCard";
@@ -20,6 +20,7 @@ import type { TaskData } from "../../types/types";
 
 let tasks: Task[] = [];
 let members: Member[] = [];
+let projectMembers: Member[] = [];
 
 // Kopplar klickhantering till boarden
 export function setupTaskBoard(): void {
@@ -63,7 +64,7 @@ function handleTaskBoardClick(event: MouseEvent): void {
 
 		if (!task) return;
 
-		handleAssignTask(task);
+		handleAssignTask(task, projectMembers);
 	}
 }
 
@@ -105,7 +106,12 @@ async function handleCompleteTask(taskId: string): Promise<void> {
 export async function renderTaskBoard(projectId: string): Promise<void> {
 	try {
 		[tasks, members] = await Promise.all([getTasksByProject(projectId), getAllMembers()]);
-		renderMemberFilter(members);
+
+		const project = await getProjectById(projectId);
+		const memberIds = project?.getMemberIds() ?? [];
+		projectMembers = members.filter((member) => memberIds.includes(member.getId()));
+
+		renderMemberFilter(projectMembers);
 		renderTasks();
 		clearNotice();
 	} catch (error) {
