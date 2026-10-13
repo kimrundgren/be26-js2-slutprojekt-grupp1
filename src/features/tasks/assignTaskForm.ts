@@ -1,7 +1,7 @@
 import { Modal } from "bootstrap";
 import { renderNotice } from "../../components/notice";
 import { renderFormError, clearFormError } from "../../components/formError";
-import { getAllMembers } from "../../services/memberService";
+import type { Member } from "../../models/Member";
 import { updateTask } from "../../services/taskService";
 import { createSelectOption } from "../../utils/dom";
 import type { Task } from "../../models/Task";
@@ -29,7 +29,7 @@ export function setupAssignForm(): void {
 }
 
 // Fyller select med projektets medlemmar och öppnar modalen
-export async function handleAssignTask(task: Task): Promise<void> {
+export async function handleAssignTask(task: Task, projectMembers: Member[]): Promise<void> {
 	const form = document.querySelector<HTMLFormElement>("#assign-task-form");
 	const formError = form?.querySelector<HTMLParagraphElement>("#form-error");
 	const taskIdInput = form?.querySelector<HTMLInputElement>("#assign-task-id");
@@ -45,8 +45,7 @@ export async function handleAssignTask(task: Task): Promise<void> {
 	memberSelect.options[0].disabled = true;
 
 	try {
-		const members = await getAllMembers();
-		const matchingMembers = members.filter(
+		const matchingMembers = projectMembers.filter(
 			(member) => member.getCategory() === task.getCategory(),
 		);
 
