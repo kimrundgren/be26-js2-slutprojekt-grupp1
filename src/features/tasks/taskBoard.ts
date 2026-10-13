@@ -64,7 +64,7 @@ function handleTaskBoardClick(event: MouseEvent): void {
 
 		if (!task) return;
 
-		handleAssignTask(task, projectMembers);
+		handleAssignTask(task);
 	}
 }
 
