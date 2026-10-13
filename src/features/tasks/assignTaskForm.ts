@@ -1,7 +1,7 @@
 import { Modal } from "bootstrap";
 import { renderNotice } from "../../components/notice";
 import { renderFormError, clearFormError } from "../../components/formError";
-import type { Member } from "../../models/Member";
+import { getAllMembers } from "../../services/memberService";
 import { updateTask } from "../../services/taskService";
 import { createSelectOption } from "../../utils/dom";
 import type { Task } from "../../models/Task";
