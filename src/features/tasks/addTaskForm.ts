@@ -1,28 +1,43 @@
 import { Modal } from "bootstrap";
 
-import { CATEGORIES, PRIORITIES, PRIORITY_LABELS, CATEGORY_LABELS } from "../../constants";
+import {
+	CATEGORIES,
+	CATEGORY_LABELS,
+	DATE_FORMAT,
+	PRIORITIES,
+	PRIORITY_LABELS,
+} from "../../constants";
 
 import { renderNotice } from "../../components/notice";
 import { renderFormError, clearFormError } from "../../components/formError";
 import { addTask } from "../../services/taskService";
 import { createSelectOption } from "../../utils/dom";
 import { getProjectId } from "../../utils/urls";
+import { formatDate } from "../../utils/date";
 
-import type { Category, Priority, TaskData } from "../../types/types";
+import type { Task } from "../../models/Task";
+import type { TaskData } from "../../types/types";
 
 import { addTaskToBoard } from "./taskBoard";
 
-// Initierar formuläret och dess händelsehantering
+/**
+ * Sets up the add task form.
+ */
 export function setupAddTaskForm(): void {
 	const modal = document.querySelector<HTMLDivElement>("#add-task-modal");
 	const form = document.querySelector<HTMLFormElement>("#add-task-form");
-	const formError = document.querySelector<HTMLParagraphElement>("#form-error");
-
 	const categorySelect = document.querySelector<HTMLSelectElement>("#add-task-category");
 	const prioritySelect = document.querySelector<HTMLSelectElement>("#add-task-priority");
 
-	if (!modal || !form || !formError || !categorySelect || !prioritySelect) {
-		console.error("setupAddTaskForm: saknar element i HTML");
+	if (!modal || !form || !categorySelect || !prioritySelect) {
+		console.error("setupAddTaskForm: Required HTML elements are missing.");
+		return;
+	}
+
+	const formError = form.querySelector<HTMLParagraphElement>("#form-error");
+
+	if (!formError) {
+		console.error("setupAddTaskForm: Form error element is missing.");
 		return;
 	}
 
@@ -44,26 +59,62 @@ export function setupAddTaskForm(): void {
 	form.addEventListener("submit", handleAddTaskSubmit);
 }
 
-// Hanterar validering och skapande av en ny uppgift vid submit
+/**
+ * Handles add task form submission.
+ *
+ * @param event - The form submit event.
+ */
 async function handleAddTaskSubmit(event: SubmitEvent): Promise<void> {
 	event.preventDefault();
 
-	const form = event.currentTarget as HTMLFormElement;
-	const formData = new FormData(form);
-	const formError = form.querySelector("#form-error") as HTMLParagraphElement;
+	if (!(event.currentTarget instanceof HTMLFormElement)) {
+		console.error("handleAddTaskSubmit: Invalid form element.");
+		return;
+	}
+
+	const form = event.currentTarget;
+	const formError = form.querySelector<HTMLParagraphElement>("#form-error");
+
+	if (!formError) {
+		console.error("handleAddTaskSubmit: Form error element is missing.");
+		return;
+	}
 
 	clearFormError(formError);
 
-	const title = (formData.get("title") as string).trim();
-	const description = (formData.get("description") as string).trim();
-	const category = formData.get("category") as Category;
-	const priority = formData.get("priority") as Priority;
-	const deadline = formData.get("deadline") as string;
+	const formData = new FormData(form);
 
-	const today = new Date().toLocaleDateString("sv-SE");
+	const titleValue = formData.get("title");
+	const descriptionValue = formData.get("description");
+	const categoryValue = formData.get("category");
+	const priorityValue = formData.get("priority");
+	const deadlineValue = formData.get("deadline");
+
+	if (
+		typeof titleValue !== "string" ||
+		typeof descriptionValue !== "string" ||
+		typeof categoryValue !== "string" ||
+		typeof priorityValue !== "string" ||
+		typeof deadlineValue !== "string"
+	) {
+		renderFormError(formError, "Alla fält måste fyllas i korrekt.");
+		return;
+	}
+
+	const title = titleValue.trim();
+	const description = descriptionValue.trim();
+	const category = CATEGORIES.find((item) => item === categoryValue);
+	const priority = PRIORITIES.find((item) => item === priorityValue);
+	const deadline = deadlineValue;
+	const today = formatDate(new Date(), DATE_FORMAT);
 
 	if (!title || !description) {
 		renderFormError(formError, "Titel och beskrivning får inte vara tomma.");
+		return;
+	}
+
+	if (!category || !priority) {
+		renderFormError(formError, "Välj en giltig kategori och prioritet.");
 		return;
 	}
 
@@ -75,10 +126,12 @@ async function handleAddTaskSubmit(event: SubmitEvent): Promise<void> {
 	const projectId = getProjectId();
 
 	if (!projectId) {
-		console.error("Projekt-ID saknas i URL:en");
+		renderFormError(formError, "Projekt-ID saknas. Försök öppna projektet igen.");
+		console.error("handleAddTaskSubmit: Missing project ID.");
 		return;
 	}
 
+	// Prepare task data for the API
 	const taskData: TaskData = {
 		title,
 		description,
@@ -90,15 +143,23 @@ async function handleAddTaskSubmit(event: SubmitEvent): Promise<void> {
 		projectId,
 	};
 
+	let newTask: Task;
+
 	try {
-		const newTask = await addTask(taskData);
-		addTaskToBoard(newTask);
-
-		renderNotice("Uppgiften har lagts till.", "success");
-
-		Modal.getOrCreateInstance("#add-task-modal").hide();
+		newTask = await addTask(taskData);
 	} catch (error) {
 		renderFormError(formError, "Kunde inte skapa uppgiften.");
-		console.error("Kunde inte skapa uppgiften:", error);
+
+		if (error instanceof Error) {
+			console.error("Failed to create task:", error.message);
+		} else {
+			console.error("Failed to create task:", error);
+		}
+
+		return;
 	}
+
+	addTaskToBoard(newTask);
+	renderNotice("Uppgiften har lagts till.", "success");
+	Modal.getOrCreateInstance("#add-task-modal").hide();
 }

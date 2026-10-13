@@ -1,12 +1,12 @@
 import { renderNotice, clearNotice } from "../../components/notice";
+
 import { getProjectById } from "../../services/projectService";
 import { getTasksByProject, deleteTask, updateTask } from "../../services/taskService";
 import { getAllMembers } from "../../services/memberService";
+
 import { createTaskCard } from "./taskCard";
 import { handleEditTask } from "./editTaskForm";
 import { handleAssignTask } from "./assignTaskForm";
-import type { Task } from "../../models/Task";
-import type { Member } from "../../models/Member";
 import {
 	filterTasks,
 	sortTasks,
@@ -16,32 +16,45 @@ import {
 } from "./taskFilter";
 
 import { clearElements } from "../../utils/dom";
+
+import type { Task } from "../../models/Task";
+import type { Member } from "../../models/Member";
 import type { TaskData } from "../../types/types";
 
 let tasks: Task[] = [];
 let members: Member[] = [];
-let projectMembers: Member[] = [];
 
-// Kopplar klickhantering till boarden
+/**
+ * Sets up the task board and registers event handlers.
+ */
 export function setupTaskBoard(): void {
 	const taskBoard = document.querySelector<HTMLDivElement>("#task-board");
 
 	if (!taskBoard) {
-		console.error("setupTaskBoard: saknar #task-board i HMTL");
+		console.error("setupTaskBoard: Could not find the task board element in the HTML.");
 		return;
 	}
+
 	setupTaskFilters(renderTasks);
 	taskBoard.addEventListener("click", handleTaskBoardClick);
 }
 
-// Hanterar actions från uppgiftskorten
+/**
+ * Handles button clicks on the task board using event delegation.
+ *
+ * @param event - The click event from the task board.
+ */
 function handleTaskBoardClick(event: MouseEvent): void {
-	const button = (event.target as HTMLElement).closest<HTMLButtonElement>("button[data-action]");
+	if (!(event.target instanceof Element)) return;
+
+	const button = event.target.closest<HTMLButtonElement>("button[data-action]");
 	const card = button?.closest<HTMLElement>("[data-task-id]");
 
 	if (!button || !card) return;
 
-	const taskId = card.dataset.taskId as string;
+	const taskId = card.dataset.taskId;
+
+	if (!taskId) return;
 
 	if (button.dataset.action === "delete") {
 		handleDeleteTask(taskId);
@@ -68,7 +81,11 @@ function handleTaskBoardClick(event: MouseEvent): void {
 	}
 }
 
-// Raderar en uppgift och uppdaterar boarden
+/**
+ * Deletes a task and updates the task board.
+ *
+ * @param taskId - The ID of the task to delete.
+ */
 async function handleDeleteTask(taskId: string): Promise<void> {
 	try {
 		await deleteTask(taskId);
@@ -80,11 +97,15 @@ async function handleDeleteTask(taskId: string): Promise<void> {
 		renderNotice("Uppgiften har tagits bort.", "success");
 	} catch (error) {
 		renderNotice("Kunde inte radera uppgiften.", "error");
-		console.error("Kunde inte radera uppgiften.", error);
+		console.error("Failed to delete task:", error);
 	}
 }
 
-// Slutför en uppgift och uppdaterar boarden
+/**
+ * Marks a task as completed and updates the task board.
+ *
+ * @param taskId - The ID of the task to complete.
+ */
 async function handleCompleteTask(taskId: string): Promise<void> {
 	const taskUpdates: Partial<TaskData> = {
 		status: "done",
@@ -98,36 +119,48 @@ async function handleCompleteTask(taskId: string): Promise<void> {
 		renderNotice("Uppgiften är slutförd.", "success");
 	} catch (error) {
 		renderNotice("Kunde inte slutföra uppgiften.", "error");
-		console.error("Kunde inte slutföra uppgiften.", error);
+		console.error("Failed to complete task:", error);
 	}
 }
 
-// Hämtar projektets uppgifter och visar boarden
+/**
+ * Fetches the project tasks and members, then renders the task board.
+ *
+ * @param projectId - The ID of the project.
+ */
 export async function renderTaskBoard(projectId: string): Promise<void> {
 	try {
+		const project = await getProjectById(projectId);
+
+		if (!project) {
+			renderNotice("Projektet kunde inte hittas.", "error");
+			return;
+		}
+
 		[tasks, members] = await Promise.all([getTasksByProject(projectId), getAllMembers()]);
 
-		const project = await getProjectById(projectId);
-		const memberIds = project?.getMemberIds() ?? [];
-		projectMembers = members.filter((member) => memberIds.includes(member.getId()));
+		const memberIds = project.getMemberIds() ?? [];
+		const projectMembers = members.filter((member) => memberIds.includes(member.getId()));
 
 		renderMemberFilter(projectMembers);
 		renderTasks();
 		clearNotice();
 	} catch (error) {
 		renderNotice("Det gick inte att hämta uppgifterna. Försök igen senare.", "error");
-		console.error("Kunde inte hämta uppgifterna:", error);
+		console.error("Failed to load the task board:", error);
 	}
 }
 
-// Renderar uppgifterna i respektive statuskolumn
+/**
+ * Renders the filtered and sorted tasks in their respective status columns.
+ */
 function renderTasks(): void {
 	const newColumn = document.querySelector<HTMLDivElement>("#column-new");
 	const ongoingColumn = document.querySelector<HTMLDivElement>("#column-ongoing");
 	const doneColumn = document.querySelector<HTMLDivElement>("#column-done");
 
 	if (!newColumn || !ongoingColumn || !doneColumn) {
-		console.error("Kunde inte hitta boardens kolumner.");
+		console.error("renderTasks: Could not find all task board columns in the HTML.");
 		return;
 	}
 
@@ -151,13 +184,22 @@ function renderTasks(): void {
 	}
 }
 
-// Lägger till en uppgift i boardens local state
+/**
+ * Adds a task to the local state and re-renders the board.
+ *
+ * @param task - The task to add.
+ */
 export function addTaskToBoard(task: Task): void {
 	tasks.push(task);
 	renderTasks();
 }
 
-// Uppdaterar en befintlig uppgift i boardens local state
+/**
+ * Updates a task in the local state and re-renders the board.
+ *
+ * @param taskId - The ID of the task to update.
+ * @param updates - The task properties to update.
+ */
 export function updateTaskOnBoard(taskId: string, updates: Partial<TaskData>): void {
 	const task = tasks.find((task) => task.getId() === taskId);
 

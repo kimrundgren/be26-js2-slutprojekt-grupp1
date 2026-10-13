@@ -1,26 +1,35 @@
 import { Modal } from "bootstrap";
 
-import { PRIORITIES, PRIORITY_LABELS } from "../../constants";
+import { DATE_FORMAT, PRIORITIES, PRIORITY_LABELS } from "../../constants";
 
 import { renderNotice } from "../../components/notice";
 import { renderFormError, clearFormError } from "../../components/formError";
 import { updateTask } from "../../services/taskService";
 import { createSelectOption } from "../../utils/dom";
+import { formatDate } from "../../utils/date";
 
 import type { Task } from "../../models/Task";
-import type { Priority, TaskData } from "../../types/types";
+import type { TaskData } from "../../types/types";
 
 import { updateTaskOnBoard } from "./taskBoard";
 
-// Initierar formuläret och dess händelsehantering
+/**
+ * Sets up the edit task form.
+ */
 export function setupEditTaskForm(): void {
 	const modal = document.querySelector<HTMLDivElement>("#edit-task-modal");
 	const form = document.querySelector<HTMLFormElement>("#edit-task-form");
-	const formError = document.querySelector<HTMLParagraphElement>("#form-error");
 	const prioritySelect = document.querySelector<HTMLSelectElement>("#edit-task-priority");
 
-	if (!modal || !form || !formError || !prioritySelect) {
-		console.error("setupEditTaskForm: saknar element i HTML");
+	if (!modal || !form || !prioritySelect) {
+		console.error("setupEditTaskForm: Required HTML elements are missing.");
+		return;
+	}
+
+	const formError = form.querySelector<HTMLParagraphElement>("#form-error");
+
+	if (!formError) {
+		console.error("setupEditTaskForm: Form error element is missing.");
 		return;
 	}
 
@@ -37,20 +46,30 @@ export function setupEditTaskForm(): void {
 	form.addEventListener("submit", handleUpdateTaskSubmit);
 }
 
-// Visar uppgiftens sparade värden i formuläret och öppnar modalen
+/**
+ * Populates the form with the selected task and opens the modal.
+ *
+ * @param task - The task to edit.
+ */
 export function handleEditTask(task: Task): void {
 	const form = document.querySelector<HTMLFormElement>("#edit-task-form");
-	const formError = document.querySelector("#form-error") as HTMLParagraphElement;
 
-	if (!form || !formError) return;
+	if (!form) {
+		console.error("handleEditTask: Form element is missing.");
+		return;
+	}
 
-	clearFormError(formError);
-
+	const formError = form.querySelector<HTMLParagraphElement>("#form-error");
 	const taskIdInput = form.querySelector<HTMLInputElement>("#edit-task-id");
 	const prioritySelect = form.querySelector<HTMLSelectElement>("#edit-task-priority");
 	const deadlineInput = form.querySelector<HTMLInputElement>("#edit-task-deadline");
 
-	if (!prioritySelect || !deadlineInput || !taskIdInput) return;
+	if (!formError || !taskIdInput || !prioritySelect || !deadlineInput) {
+		console.error("handleEditTask: Required form elements are missing.");
+		return;
+	}
+
+	clearFormError(formError);
 
 	taskIdInput.value = task.getId();
 	prioritySelect.value = task.getPriority();
@@ -59,21 +78,53 @@ export function handleEditTask(task: Task): void {
 	Modal.getOrCreateInstance("#edit-task-modal").show();
 }
 
-// Hanterar validering och uppdatering av en befintlig uppgift
+/**
+ * Handles edit task form submission.
+ *
+ * @param event - The form submit event.
+ */
 async function handleUpdateTaskSubmit(event: SubmitEvent): Promise<void> {
 	event.preventDefault();
 
-	const form = event.currentTarget as HTMLFormElement;
-	const formData = new FormData(form);
-	const formError = form.querySelector("#form-error") as HTMLParagraphElement;
+	if (!(event.currentTarget instanceof HTMLFormElement)) {
+		console.error("handleUpdateTaskSubmit: Invalid form element.");
+		return;
+	}
+
+	const form = event.currentTarget;
+	const formError = form.querySelector<HTMLParagraphElement>("#form-error");
+
+	if (!formError) {
+		console.error("handleUpdateTaskSubmit: Form error element is missing.");
+		return;
+	}
 
 	clearFormError(formError);
 
-	const taskId = formData.get("id") as string;
-	const priority = formData.get("priority") as Priority;
-	const deadline = formData.get("deadline") as string;
+	const formData = new FormData(form);
 
-	const today = new Date().toLocaleDateString("sv-SE");
+	const taskIdValue = formData.get("id");
+	const priorityValue = formData.get("priority");
+	const deadlineValue = formData.get("deadline");
+
+	if (
+		typeof taskIdValue !== "string" ||
+		typeof priorityValue !== "string" ||
+		typeof deadlineValue !== "string"
+	) {
+		renderFormError(formError, "Alla fält måste fyllas i korrekt.");
+		return;
+	}
+
+	const taskId = taskIdValue;
+	const priority = PRIORITIES.find((item) => item === priorityValue);
+	const deadline = deadlineValue;
+	const today = formatDate(new Date(), DATE_FORMAT);
+
+	if (!priority) {
+		renderFormError(formError, "Välj en giltig prioritet.");
+		return;
+	}
 
 	if (!deadline || deadline < today) {
 		renderFormError(formError, "Deadline får inte vara tidigare än idag.");
@@ -84,13 +135,20 @@ async function handleUpdateTaskSubmit(event: SubmitEvent): Promise<void> {
 
 	try {
 		await updateTask(taskId, taskUpdates);
-		updateTaskOnBoard(taskId, taskUpdates);
-
-		renderNotice("Uppgiften har uppdaterats.", "success");
-
-		Modal.getOrCreateInstance("#edit-task-modal").hide();
 	} catch (error) {
 		renderFormError(formError, "Kunde inte uppdatera uppgiften.");
-		console.error("Kunde inte uppdatera uppgiften:", error);
+
+		if (error instanceof Error) {
+			console.error("Failed to update task:", error.message);
+		} else {
+			console.error("Failed to update task:", error);
+		}
+
+		return;
 	}
+
+	updateTaskOnBoard(taskId, taskUpdates);
+
+	renderNotice("Uppgiften har uppdaterats.", "success");
+	Modal.getOrCreateInstance("#edit-task-modal").hide();
 }

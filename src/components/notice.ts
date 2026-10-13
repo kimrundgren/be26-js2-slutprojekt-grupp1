@@ -5,7 +5,7 @@ const noticeClasses: Record<NoticeType, string> = {
 	error: "alert-danger",
 };
 
-// Error visas längre än success notiser (millisekunder)
+// Display duration in milliseconds
 const noticeDurations: Record<NoticeType, number> = {
 	success: 4000,
 	error: 8000,
@@ -13,12 +13,12 @@ const noticeDurations: Record<NoticeType, number> = {
 
 let noticeTimeout: number | undefined;
 
-// Visar en notice nere på sidan och döljer den automatiskt
+// Displays a notice and hides it automatically
 export function renderNotice(message: string, type: NoticeType): void {
 	const notice = document.querySelector<HTMLDivElement>("#notice");
 
 	if (!notice) {
-		console.error("renderNotice: saknar #notice i HTML");
+		console.error('renderNotice: Required element "#notice" not found in HTML.');
 		return;
 	}
 
@@ -31,13 +31,17 @@ export function renderNotice(message: string, type: NoticeType): void {
 	noticeTimeout = window.setTimeout(clearNotice, noticeDurations[type]);
 }
 
-// Rensar och döljer notice
+// Clears and hides the notice
 export function clearNotice(): void {
+	if (noticeTimeout !== undefined) {
+		window.clearTimeout(noticeTimeout);
+		noticeTimeout = undefined;
+	}
+
 	const notice = document.querySelector<HTMLDivElement>("#notice");
 
 	if (!notice) return;
 
-	clearTimeout(noticeTimeout);
 	notice.textContent = "";
 	notice.classList.remove(...Object.values(noticeClasses));
 	notice.classList.add("d-none");
