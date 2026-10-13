@@ -1,7 +1,9 @@
-import type { Priority, Category } from "./types/types";
+import type { Category, Priority } from "./types/types";
 
+// API
 export const BASE_URL = "https://scrum-board-4d46b-default-rtdb.europe-west1.firebasedatabase.app";
 
+// Categories
 export const CATEGORIES = ["frontend", "backend", "ux"] as const;
 
 export const CATEGORY_LABELS: Record<Category, string> = {
@@ -10,6 +12,7 @@ export const CATEGORY_LABELS: Record<Category, string> = {
 	ux: "UX",
 };
 
+// Priorities
 export const PRIORITIES = ["low", "medium", "high"] as const;
 
 export const PRIORITY_LABELS: Record<Priority, string> = {
@@ -18,4 +21,5 @@ export const PRIORITY_LABELS: Record<Priority, string> = {
 	high: "Hög",
 };
 
+// Date formatting
 export const DATE_FORMAT = "YYYY-MM-DD";
