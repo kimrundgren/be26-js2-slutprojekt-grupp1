@@ -57,7 +57,7 @@ export async function addTask(payload: TaskData): Promise<Task> {
 }
 
 /**
- * Delete a task.
+ * Deletes a task.
  *
  * @param taskId - The ID of the task to delete.
  * @throws An error if the API request fails.
@@ -75,7 +75,7 @@ export async function deleteTask(taskId: string): Promise<void> {
 /**
  * Updates an existing task.
  *
- * @param taskId - the ID of the task to update.
+ * @param taskId - The ID of the task to update.
  * @param payload - The task data to update.
  * @throws An error if the API request fails.
  */
