@@ -2,7 +2,6 @@ import { createProjectCard } from "./projectCard";
 import { getAllProjects } from "../../services/projectService";
 import { Project } from "../../models/Project";
 import { getTasksByProject } from "../../services/taskService";
-import { renderNotice } from "../../components/notice";
 
 let projects: Project[] = [];
 //Kopplar projektets id till antal pågående uppgifter
@@ -20,7 +19,9 @@ export function buildProjectList() {
 		container.textContent = "Inga projekt än";
 		return;
 	}
+
 	for (const project of projects) {
+		// Om nya projekt inte finns i ongoingCounts än blir det 0
 		const ongoingCount = ongoingCounts[project.getId()] ?? 0;
 		const card = createProjectCard(project, ongoingCount);
 
@@ -32,14 +33,9 @@ export function buildProjectList() {
 }
 // Hämtar projekten från firebase och bygger ut dem, körs när index laddas
 export async function renderProjectList(): Promise<void> {
-	try {
-		projects = await getAllProjects();
-		ongoingCounts = await getOngoingCounts(projects);
-		buildProjectList();
-	} catch (error) {
-		renderNotice("Det gick inte att hämta projekten. Försök igen senare.", "error");
-		console.error("Kunde inte hämta projekten:", error);
-	}
+	projects = await getAllProjects();
+	ongoingCounts = await getOngoingCounts(projects);
+	buildProjectList();
 }
 
 // Används av formuläret, lägger till det nya projektet och bygger om.
