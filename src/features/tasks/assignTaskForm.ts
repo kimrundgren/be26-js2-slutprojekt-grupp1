@@ -8,7 +8,6 @@ import type { Task } from "../../models/Task";
 import type { TaskData } from "../../types/types";
 import { updateTaskOnBoard } from "./taskBoard";
 
-// Initierar formuläret och dess händelsehantering
 export function setupAssignForm(): void {
 	const modal = document.querySelector<HTMLDivElement>("#assign-task-modal");
 	const form = document.querySelector<HTMLFormElement>("#assign-task-form");
@@ -28,7 +27,6 @@ export function setupAssignForm(): void {
 	form.addEventListener("submit", handleAssignTaskSubmit);
 }
 
-// Fyller select med projektets medlemmar och öppnar modalen
 export async function handleAssignTask(task: Task): Promise<void> {
 	const form = document.querySelector<HTMLFormElement>("#assign-task-form");
 	const formError = form?.querySelector<HTMLParagraphElement>("#form-error");
@@ -47,7 +45,9 @@ export async function handleAssignTask(task: Task): Promise<void> {
 	try {
 		const members = await getAllMembers();
 		const matchingMembers = members.filter(
-			(member) => member.getCategory() === task.getCategory(),
+			(member) =>
+				member.getCategory() === task.getCategory() &&
+				member.getProjectIds().includes(task.getProjectId()),
 		);
 
 		if (matchingMembers.length === 0) {
@@ -61,20 +61,26 @@ export async function handleAssignTask(task: Task): Promise<void> {
 		}
 	} catch (error) {
 		renderFormError(formError, "Kunde inte hämta medlemmarna.");
-		console.error("Kunde inte hämta medlemmarna:", error);
+
+		if (error instanceof Error) {
+			console.error("Kunde inte hämta medlemmarna:", error.message);
+		} else {
+			console.error("Kunde inte hämta medlemmarna, okänt fel:", error);
+		}
 		return;
 	}
 
 	Modal.getOrCreateInstance("#assign-task-modal").show();
 }
 
-// Hanterar validering och tilldelning av en medlem till en uppgift
 async function handleAssignTaskSubmit(event: SubmitEvent): Promise<void> {
 	event.preventDefault();
 
 	const form = event.currentTarget as HTMLFormElement;
 	const formData = new FormData(form);
-	const formError = form.querySelector("#form-error") as HTMLParagraphElement;
+	const formError = form.querySelector<HTMLParagraphElement>("#form-error");
+
+	if (!formError) return;
 
 	clearFormError(formError);
 
@@ -97,6 +103,11 @@ async function handleAssignTaskSubmit(event: SubmitEvent): Promise<void> {
 		Modal.getOrCreateInstance("#assign-task-modal").hide();
 	} catch (error) {
 		renderFormError(formError, "Kunde inte tilldela uppgiften.");
-		console.error("Kunde inte tilldela uppgiften:", error);
+
+		if (error instanceof Error) {
+			console.error("Kunde inte tilldela uppgiften:", error.message);
+		} else {
+			console.error("Kunde inte tilldela uppgiften, okänt fel:", error);
+		}
 	}
 }

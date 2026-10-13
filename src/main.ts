@@ -6,7 +6,7 @@ import { renderProjectList } from "./features/projects/projectList";
 import { renderProjectSummary } from "./features/projects/projectSummary";
 
 import { renderMemberList } from "./features/members/memberList";
-import { createMemberForm } from "./features/members/memberForm";
+import { setupMemberForm } from "./features/members/memberForm";
 
 import { setupAddTaskForm } from "./features/tasks/addTaskForm";
 import { setupEditTaskForm } from "./features/tasks/editTaskForm";
@@ -23,7 +23,7 @@ function initApp(): void {
 		renderProjectList();
 		renderMemberList();
 		createProjectForm();
-		createMemberForm();
+		setupMemberForm();
 	}
 
 	// Projektvy

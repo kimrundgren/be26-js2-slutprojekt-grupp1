@@ -7,48 +7,67 @@ import { createSelectOption } from "../../utils/dom";
 import type { Category } from "../../types/types";
 import { addMemberToList } from "./memberList";
 
-export function createMemberForm(): void {
+export function setupMemberForm(): void {
 	const modal = document.querySelector<HTMLDivElement>("#new-member-modal");
 	const form = document.querySelector<HTMLFormElement>("#new-member-form");
-	const nameInput = document.querySelector<HTMLInputElement>("#member-name");
 	const categorySelect = document.querySelector<HTMLSelectElement>("#member-category");
 	const formError = document.querySelector<HTMLParagraphElement>("#member-error");
 
-	if (!modal || !form || !nameInput || !categorySelect || !formError) {
-		console.error("createMemberForm: saknar element i HTML");
+	if (!modal || !form || !categorySelect || !formError) {
+		console.error("setupMemberForm: saknar element i HTML");
 		return;
 	}
 
-	for (const category of CATEGORIES) {
-		categorySelect.append(createSelectOption(CATEGORY_LABELS[category], category));
-	}
+	renderCategoryOptions(categorySelect);
 
 	modal.addEventListener("hidden.bs.modal", () => {
 		form.reset();
 		clearFormError(formError);
 	});
 
-	form.addEventListener("submit", async function (event) {
-		event.preventDefault();
-		clearFormError(formError);
+	form.addEventListener("submit", handleMemberSubmit);
+}
 
-		const name = nameInput.value.trim();
-		const category = categorySelect.value as Category;
+function renderCategoryOptions(categorySelect: HTMLSelectElement): void {
+	for (const category of CATEGORIES) {
+		categorySelect.append(createSelectOption(CATEGORY_LABELS[category], category));
+	}
+}
 
-		if (!name || !category) {
-			renderFormError(formError, "Fyll i alla obligatoriska fält.");
-			return;
+// Re-query the form instead of closing over setupMemberForm's variables, so this handler stays standalone
+async function handleMemberSubmit(event: SubmitEvent): Promise<void> {
+	event.preventDefault();
+
+	const form = event.currentTarget as HTMLFormElement;
+	const nameInput = form.querySelector<HTMLInputElement>("#member-name");
+	const categorySelect = form.querySelector<HTMLSelectElement>("#member-category");
+	const formError = form.querySelector<HTMLParagraphElement>("#member-error");
+
+	if (!nameInput || !categorySelect || !formError) return;
+
+	clearFormError(formError);
+
+	const name = nameInput.value.trim();
+	const category = categorySelect.value as Category;
+
+	if (!name || !category) {
+		renderFormError(formError, "Fyll i alla obligatoriska fält.");
+		return;
+	}
+
+	try {
+		const member = await addMember(name, category);
+
+		await addMemberToList(member);
+		renderNotice("Medlemmen har lagts till.", "success");
+		Modal.getOrCreateInstance("#new-member-modal").hide();
+	} catch (error) {
+		renderFormError(formError, "Medlemmen kunde inte sparas.");
+
+		if (error instanceof Error) {
+			console.error("Kunde inte spara medlemmen:", error.message);
+		} else {
+			console.error("Kunde inte spara medlemmen, okänt fel:", error);
 		}
-
-		try {
-			const member = await addMember(name, category);
-
-			await addMemberToList(member);
-			renderNotice("Medlemmen har lagts till.", "success");
-			Modal.getOrCreateInstance(modal).hide();
-		} catch (error) {
-			renderFormError(formError, "Medlemmen kunde inte sparas.");
-			console.error(error);
-		}
-	});
+	}
 }
