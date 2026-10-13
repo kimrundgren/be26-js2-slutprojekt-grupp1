@@ -4,30 +4,39 @@ import { getProjectId } from "./utils/urls";
 
 import { renderProjectList } from "./features/projects/projectList";
 import { renderProjectSummary } from "./features/projects/projectSummary";
+import { setupProjectForm } from "./features/projects/projectForm";
 
 import { renderMemberList } from "./features/members/memberList";
 import { setupMemberForm } from "./features/members/memberForm";
 
 import { setupAddTaskForm } from "./features/tasks/addTaskForm";
-import { setupEditTaskForm } from "./features/tasks/editTaskForm";
-import { setupTaskBoard } from "./features/tasks/taskBoard";
-import { renderTaskBoard } from "./features/tasks/taskBoard";
-import { setupProjectForm } from "./features/projects/projectForm";
 import { setupAssignForm } from "./features/tasks/assignTaskForm";
+import { setupEditTaskForm } from "./features/tasks/editTaskForm";
+import { renderTaskBoard, setupTaskBoard } from "./features/tasks/taskBoard";
 
+/**
+ * Initialize the application based on the current page.
+ */
 function initApp(): void {
 	const page = document.body.dataset.page;
 
-	// Index, översiktsvy
+	if (!page) {
+		throw new Error("initApp: Missing data-page attribute on body.");
+	}
+
+	if (page !== "index" && page !== "project") {
+		throw new Error(`initApp: Unknown page "${page}".`);
+	}
+
+	// Initialize the overview page
 	if (page === "index") {
 		renderProjectList();
 		renderMemberList();
 		setupMemberForm();
 		setupProjectForm();
-		
 	}
 
-	// Projektvy
+	// Initialize the project page
 	if (page === "project") {
 		const projectId = getProjectId();
 
