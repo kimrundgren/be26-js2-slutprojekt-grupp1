@@ -1,10 +1,10 @@
-// Visar ett felmeddelande som text i ett formulär
+// Displays a form error message
 export function renderFormError(element: HTMLElement, message: string): void {
 	element.textContent = message;
 	element.classList.remove("d-none");
 }
 
-// Rensar och döljer felmeddelandet i ett formulär
+// Clears and hides the form error
 export function clearFormError(element: HTMLElement): void {
 	element.textContent = "";
 	element.classList.add("d-none");
