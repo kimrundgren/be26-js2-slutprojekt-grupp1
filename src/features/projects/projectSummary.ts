@@ -85,7 +85,7 @@ export async function renderProjectSummary(projectId: string): Promise<void> {
 function createMemberBadge(member: Member, ongoingCount: number): HTMLElement {
 	const badge = document.createElement("span");
 	badge.className = "badge bg-body-secondary text-body fw-normal";
-	badge.textContent = `${member.getName()} • ${CATEGORY_LABELS[member.getCategory()]} • ${ongoingCount} pågående uppgifter`;
+	badge.textContent = `${member.getName()} • ${CATEGORY_LABELS[member.getCategory()]} • ${ongoingCount} pågående`;
 
 	return badge;
 }
