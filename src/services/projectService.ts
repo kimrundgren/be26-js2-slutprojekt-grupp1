@@ -6,13 +6,10 @@ import { request } from "./api";
 const urlProject = `${BASE_URL}/projects.json`;
 
 export async function getAllProjects(): Promise<Project[]> {
-	// typen Record beskriver svaret från firebase, alltså ett objekt med id som nyckel och projectdata som värde
 	const data = await request<Record<string, ProjectData> | null>(urlProject);
 
 	if (!data) return [];
 
-	// Map skapar ett projekt för varje par, Så att id:t följer med i objektet
-	// om membersIds saknas används en ny [], för att firebase inte sparar tomma listor
 	const projects: Project[] = Object.entries(data).map(
 		([id, projectData]) => new Project(id, projectData),
 	);
@@ -33,6 +30,7 @@ export async function addProject(
 	return new Project(result.name, { name, description, deadline, memberIds });
 }
 
+// Gets one project by its id. Returns null if it doesn't exist
 export async function getProjectById(id: string): Promise<Project | null> {
 	const url = `${BASE_URL}/projects/${id}.json`;
 
