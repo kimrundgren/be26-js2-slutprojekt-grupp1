@@ -1,6 +1,6 @@
 import { Modal } from "bootstrap";
 import { addProject } from "../../services/projectService";
-import { getAllMembers } from "../../services/memberService";
+import { getAllMembers, updateMember } from "../../services/memberService";
 import { renderNotice } from "../../components/notice";
 import { renderFormError, clearFormError } from "../../components/formError";
 import { createSelectOption } from "../../utils/dom";
@@ -50,6 +50,7 @@ export async function setupProjectForm(): Promise<void> {
 		try {
 			const memberIds = getSelectedMemberIds(memberSelect);
 			const project = await addProject(name, description, deadline, memberIds);
+			await addProjectToMembers(project.getId(), memberIds);
 
 			addProjectToList(project);
 			renderNotice("Projektet har lagts till.", "success");
@@ -88,4 +89,17 @@ function getSelectedMemberIds(memberSelect: HTMLSelectElement): string[] {
 		memberIds.push(option.value);
 	}
 	return memberIds;
+}
+// Lägger till projektets id i projectIds hos varje vald medlem
+async function addProjectToMembers(projectId: string, memberIds: string[]): Promise<void> {
+	const members = await getAllMembers();
+	const selectedMembers = members.filter((member) => memberIds.includes(member.getId()));
+
+	await Promise.all(
+		selectedMembers.map((member) =>
+			updateMember(member.getId(), {
+				projectIds: [...member.getProjectIds(), projectId],
+			}),
+		),
+	);
 }
