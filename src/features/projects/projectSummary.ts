@@ -47,7 +47,7 @@ export async function createProjectSummary(project: Project): Promise<HTMLElemen
 				);
 			}).length;
 
-			membersContainer.appendChild(createMemberItem(member, ongoingCount));
+			membersContainer.appendChild(createMemberBadge(member, ongoingCount));
 		}
 	}
 	cardBody.append(title, description, membersContainer);
@@ -81,24 +81,11 @@ export async function renderProjectSummary(projectId: string): Promise<void> {
 	}
 }
 
-// Bygger en rad med namn, kategori och antal pågående
-function createMemberItem(member: Member, ongoingCount: number): HTMLElement {
-	const item = document.createElement("div");
-	item.className = "d-flex align-items-center gap-1";
+// Bygger en badge med namn, kategori och antal pågående uppgifter
+function createMemberBadge(member: Member, ongoingCount: number): HTMLElement {
+	const badge = document.createElement("span");
+	badge.className = "badge bg-body-secondary text-body fw-normal";
+	badge.textContent = `${member.getName()} • ${CATEGORY_LABELS[member.getCategory()]} • ${ongoingCount} pågående uppgifter`;
 
-	const name = document.createElement("span");
-	name.className = "fw-bold";
-	name.textContent = member.getName();
-
-	const category = document.createElement("span");
-	category.className = "badge bg-body-secondary text-body fw-normal";
-	category.textContent = CATEGORY_LABELS[member.getCategory()];
-
-	const ongoing = document.createElement("span");
-	ongoing.className = "badge bg-body-secondary text-body fw-normal";
-	ongoing.textContent = `${ongoingCount} pågående`;
-
-	item.append(name, category, ongoing);
-
-	return item;
+	return badge;
 }
