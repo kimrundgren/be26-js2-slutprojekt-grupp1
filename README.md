@@ -1,123 +1,161 @@
-# [be26-js2-slutprojekt-grupp1](https://github.com/xpensivenose/be26-js2-slutprojekt-grupp1)
+# Scrum Board - Grupp 1
 
-En webbapp för att hantera projekt enligt scrum. Man kan skapa projekt och medlemmar, lägga till uppgifter i ett projekt, tilldela dem till medlemmar och slutföra dem på ett scrumboard.
-
-Slutprojekt i JavaScript 2 av Albin, Kim och Therese (grupp 1).
-
-Repo: https://github.com/xpensivenose/be26-js2-slutprojekt-grupp1
+Scrum Board är ett slutprojekt i kursen JavaScript 2. Det är en webbapplikation för att hantera projekt och uppgifter i ett team. Applikationen ger en överblick över projekt och tillhörande uppgifter, vilket gör det enklare att organisera arbetet och följa uppgifternas status.
 
 ## Funktioner
 
-**Projekt**
+### Projekt
 
-- Skapa projekt med namn, beskrivning, deadline och medlemmar
-- Projektlistan visar hur många pågående uppgifter varje projekt har
-- Klicka på ett projekt för att öppna dess scrumboard
-- Projektsammanfattning med projektets medlemmar, deras kategori och antal pågående uppgifter
+- Visa en lista över tillgängliga projekt med tillhörande information.
+- Visa en sammanfattning av varje projekt och dess uppgifter.
+- Skapa nya projekt genom att fylla i ett formulär.
 
-**Medlemmar**
+### Medlemmar
 
-- Skapa medlemmar med namn och kategori (Frontend, Backend eller UX)
-- Medlemslistan visar vilka projekt varje medlem är med i och antal pågående uppgifter
+- Visa en lista över alla medlemmar.
+- Lägga till nya medlemmar genom att fylla i ett formulär.
+- Tilldela medlemmar till specifika uppgifter.
 
-**Uppgifter**
+### Uppgifter
 
-- Skapa uppgifter med titel, beskrivning, kategori, prioritet och deadline
-- Tilldela en uppgift till en medlem. Bara medlemmar i projektet med samma kategori som uppgiften kan väljas
-- Ändra prioritet och deadline
-- Slutföra och radera uppgifter
-- Filtrera på kategori och medlem
-- Sortera på deadline eller titel
+- Visa uppgifter i kolumner efter status på en board.
+- Skapa nya uppgifter och ange relevant information.
+- Tilldela en medlem till en uppgift.
+- Markera uppgifter som slutförda.
+- Radera uppgifter.
+- Redigera deadline och prioritet för befintliga uppgifter.
+- Filtrera uppgifter efter kategori och medlem.
+- Sortera uppgifter efter deadline eller i bokstavsordning.
 
-**Hur en uppgift går igenom boarden**
+## Teknikstack
 
-1. En ny uppgift hamnar i första kolumnen och kan tilldelas eller ändras.
-2. När den tilldelas en medlem flyttas den till den pågående kolumnen och kan slutföras eller ändras.
-3. När den slutförs flyttas den till den sista kolumnen, får ett slutdatum och kan raderas.
+Projektet är utvecklat med följande tekniker:
 
-## Teknik
+- **TypeScript** – För att skriva strukturerad och typsäker JavaScript-kod. [Dokumentation](https://www.typescriptlang.org/docs/)
+- **Vite** – För utvecklingsserver och byggprocess. [Dokumentation](https://vite.dev/guide/)
+- **Bootstrap** – För layout och styling av gränssnittet. [Dokumentation](https://getbootstrap.com/docs/5.3/)
+- **Firebase Realtime Database REST API** – För att läsa och skriva data i databasen via HTTP-anrop, utan att använda Firebase SDK. [REST API-dokumentation](https://firebase.google.com/docs/database/rest/start)
 
-- TypeScript
-- Vite
-- Bootstrap 5
-- Firebase Realtime Database (REST API)
-- ESLint, Prettier, Husky och lint-staged
+## Kom igång
 
-## Komma igång
+**Förutsättningar:** [Node.js](https://nodejs.org/) (version 20 eller senare) och npm installerat.
 
-Du behöver Node.js installerat.
+1. Klona repot:
+    ```bash
+    git clone https://github.com/xpensivenose/be26-js2-slutprojekt-grupp1.git
+    ```
+2. Gå in i projektmappen:
+    ```bash
+    cd be26-js2-slutprojekt-grupp1
+    ```
+3. Installera beroenden:
+    ```bash
+    npm install
+    ```
+4. Starta utvecklingsservern:
+    ```bash
+    npm run dev
+    ```
+5. Öppna den lokala adressen som visas i terminalen i din webbläsare.
 
-```bash
-git clone https://github.com/xpensivenose/be26-js2-slutprojekt-grupp1.git
-cd be26-js2-slutprojekt-grupp1
-npm install
-npm run dev
-```
-
-Öppna sedan adressen som visas i terminalen, oftast `http://localhost:5173`.
-
-## Kommandon
-
-| Kommando          | Beskrivning                          |
-| ----------------- | ------------------------------------ |
-| `npm run dev`     | Startar utvecklingsservern           |
-| `npm run build`   | Typkontrollerar och bygger projektet |
-| `npm run preview` | Visar det byggda projektet lokalt    |
-| `npm run check`   | Typkontroll och lint                 |
-| `npm run format`  | Formaterar koden med Prettier        |
+Ingen `.env`-fil eller ytterligare Firebase-konfiguration behövs. Databasens URL anges via konstanten `BASE_URL` i `src/constants.ts`.
 
 ## Projektstruktur
 
+Projektet är uppdelat i mappar utifrån funktion och ansvarsområde för att göra koden enklare att förstå och underhålla.
+
+```text
+├── index.html                        # Översiktsvy
+├── project.html                      # Projektvy
+├── README.md
+└── src/
+    ├── main.ts                       # Startpunkt, väljer vy per sida
+    ├── style.css
+    ├── constants.ts                  # BASE_URL, kategorier, prioriteter, datumformat
+    │
+    ├── components/                   # Delade UI-komponenter
+    │   ├── formError.ts
+    │   └── notice.ts
+    │
+    ├── features/                     # Funktionalitet och rendering
+    │   ├── members/
+    │   │   ├── memberCard.ts
+    │   │   ├── memberForm.ts
+    │   │   └── memberList.ts
+    │   ├── projects/
+    │   │   ├── projectCard.ts
+    │   │   ├── projectForm.ts
+    │   │   ├── projectList.ts
+    │   │   └── projectSummary.ts
+    │   └── tasks/
+    │       ├── addTaskForm.ts
+    │       ├── assignTaskForm.ts
+    │       ├── editTaskForm.ts
+    │       ├── taskBoard.ts
+    │       ├── taskCard.ts
+    │       └── taskFilter.ts
+    │
+    ├── models/                       # Klasser med privata fält + getters/setters
+    │   ├── Member.ts
+    │   ├── Project.ts
+    │   └── Task.ts
+    │
+    ├── services/                     # Firebase REST-anrop
+    │   ├── api.ts
+    │   ├── memberService.ts
+    │   ├── projectService.ts
+    │   └── taskService.ts
+    │
+    ├── types/
+    │   └── types.ts                  # Delade interfaces
+    │
+    └── utils/                        # Hjälpfunktioner för datum, DOM och URL:er
+        ├── date.ts
+        ├── dom.ts
+        └── urls.ts
 ```
-src/
-  components/   Notiser och formulärfel
-  features/
-    projects/   Projektlista, projektkort, projektformulär och sammanfattning
-    tasks/      Scrumboard, uppgiftskort, formulär och filtrering
-    members/    Medlemslista, medlemskort och medlemsformulär
-  models/       Klasserna Project, Task och Member
-  services/     Anrop mot Firebase
-  types/        Typer och interface
-  utils/        Hjälpfunktioner för datum, DOM och URL
-  constants.ts  Firebase-URL, kategorier, prioriteter och datumformat
-  main.ts       Startpunkt för båda sidorna
-index.html      Startsida med projekt och medlemmar
-project.html    Scrumboard för ett projekt (project.html?id=...)
+
+Applikationen är uppdelad efter funktion och ansvarsområde. `features/` hanterar funktionaliteten och rendering för projekt, medlemmar och uppgifter. `services/` ansvarar för kommunikationen med Firebase Realtime Database via REST API, medan `models/` innehåller klasser som representerar applikationens objekt. Gemensamma komponenter, typer och hjälpfunktioner finns i separata mappar för att kunna återanvändas i olika delar av applikationen.
+
+## Namnkonvention
+
+Projektet följer gemensamma namngivningskonventioner för att göra koden konsekvent, lättläst och enklare att underhålla.
+
+| Typ               | Konvention                       | Beskrivning                                                                     | Exempel               |
+| ----------------- | -------------------------------- | ------------------------------------------------------------------------------- | --------------------- |
+| Filer             | `camelCase`                      | Filnamn börjar med liten bokstav. Efterföljande ord markeras med stor bokstav.  | `memberService.ts`    |
+| Klassfiler        | `PascalCase`                     | Filnamn börjar med stor bokstav. Efterföljande ord markeras med stor bokstav.   | `Member.ts`           |
+| API-anrop         | `get`, `add`, `update`, `delete` | Används för funktioner som hämtar, lägger till, uppdaterar eller tar bort data. | `getTasksByProject()` |
+| HTML-skapande     | `create`                         | Används för funktioner som skapar HTML-element.                                 | `createProjectCard()` |
+| Initiering        | `setup`                          | Används för funktioner som förbereder eller konfigurerar funktionalitet.        | `setupEditTaskForm()`     |
+| Händelsehantering | `handle`                         | Används för funktioner som hanterar händelser och användarinteraktioner.        | `handleAddTaskSubmit()` |
+| Rendering         | `render`                         | Används för funktioner som visar eller uppdaterar innehåll i gränssnittet.      | `renderProjectList()`       |
+
+Funktionsnamn skrivs med `camelCase` och beskriver funktionens syfte.
+
+## Framtida förbättringar
+
+- Förbättra användarupplevelsen för medlemsvalet i formuläret för nya projekt. Det nuvarande flervalsfältet (<select multiple>) kräver Ctrl/Cmd-klick för att välja flera medlemmar, vilket inte är självklart för alla användare.
+  
+  ## AI-användning
+  
+
+AI har använts som stöd för att ta fram en grundläggande layout med Bootstrap och en grundstruktur för projektets filer.
+
+## Gruppmedlemmar och ansvarsfördelning
+
+- **Albin** – Projektöversikt och projekthantering, inklusive hämtning och skapande av projekt, rendering av projektkort, navigering samt filtrering och sortering av uppgifter på board.
+- **Therese** – Medlemshantering, inklusive hämtning, visning, skapande och uppdatering av medlemmar samt tilldelning av medlem för enskilda uppgifter.
+- **Kim** – Uppgiftshantering och Scrum Board, inklusive hantering av uppgifter, boardkolumner och uppgifternas status, slutförande och radering av uppgifter samt utveckling av gemensamma hjälpfunktioner.
+
+## Build och deploy
+
+Bygg projektet för produktion med följande kommando:
+
+```bash
+npm run build
 ```
 
-## Data
+Den färdiga produktionsversionen genereras i mappen `dist`.
 
-Datan sparas i Firebase Realtime Database och hämtas med `fetch` mot REST API:t. Det finns tre samlingar: `projects`, `members` och `tasks`.
-
-- Ett projekt sparar vilka medlemmar som är med (`memberIds`).
-- En medlem sparar vilka projekt den är med i (`projectIds`).
-- En uppgift sparar vilket projekt den hör till (`projectId`) och vilken medlem den är tilldelad (`memberId`).
-
-## Deploy
-
-Projektet publiceras på Netlify.
-
-- Build command: `npm run build`
-- Publish directory: `dist`
-
-## Länkar
-
-- [Vite](https://vite.dev/guide/)
-- [Bootstrap](https://getbootstrap.com/docs/5.3/)
-- [Firebase Realtime Database REST API](https://firebase.google.com/docs/database/rest/start)
-- [Netlify](https://docs.netlify.com/)
-
-## Arbetssätt
-
-Vi jobbar i feature-branches som slås ihop med `dev` via pull requests. `main` innehåller den färdiga versionen.
-
-## Ansvarsområden
-
-- **Albin:** projekt (lista, kort, formulär, sammanfattning) samt filtrering och sortering
-- **Kim:** uppgifter och scrumboard (uppgiftskort, formulär för att lägga till och ändra, slutföra och radera)
-- **Therese:** medlemmar (lista, kort, formulär) samt tilldelning av uppgifter
-
-- **Albin:** projekt (lista, kort, formulär, sammanfattning) samt filtrering och sortering
-- **Kim:** uppgifter och scrumboard (uppgiftskort, formulär för att lägga till och ändra, slutföra och radera)
-- **Therese:** medlemmar (lista, kort, formulär) samt tilldelning av uppgifter
-
+Projektet driftsätts via [Netlify](https://www.netlify.com/) inför redovisningen.
