@@ -11,7 +11,7 @@ export function createMemberCard(
 
 	const avatar = document.createElement("div");
 	avatar.className =
-		"rounded-circle bg-primary text-white small fw-medium d-flex align-items-center justify-content-center";
+		"rounded-circle bg-primary text-white small fw-medium d-flex align-items-center justify-content-center flex-shrink-0";
 	avatar.style.width = "34px";
 	avatar.style.height = "34px";
 	avatar.textContent = getInitials(member.getName());
