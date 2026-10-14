@@ -1,0 +1,17 @@
+html {
+	scrollbar-gutter: stable;
+}
+
+/* Alert message */
+#notice {
+	z-index: 2000;
+	width: min(90vw, 28rem);
+}
+
+/* Select and input fields */
+select,
+input[type="checkbox"],
+input[type="radio"],
+input[type="date"] {
+	cursor: pointer;
+}
