@@ -3,6 +3,7 @@ import type { Project } from "../../models/Project";
 import { getAllMembers } from "../../services/memberService";
 import { getAllProjects } from "../../services/projectService";
 import { getTasksByProject } from "../../services/taskService";
+import { renderNotice } from "../../components/notice";
 import { createMemberCard } from "./memberCard";
 
 // Cached in module scope so addMemberToList can update the UI without refetching everything from Firebase
@@ -47,8 +48,13 @@ async function buildMemberList(): Promise<void> {
 }
 
 export async function renderMemberList(): Promise<void> {
-	[members, projects] = await Promise.all([getAllMembers(), getAllProjects()]);
-	await buildMemberList();
+	try {
+		[members, projects] = await Promise.all([getAllMembers(), getAllProjects()]);
+		await buildMemberList();
+	} catch (error) {
+		renderNotice("Det gick inte att hämta medlemmarna. Försök igen senare.", "error");
+		console.error("Kunde inte hämta medlemmarna:", error);
+	}
 }
 
 export async function addMemberToList(member: Member): Promise<void> {
