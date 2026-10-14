@@ -116,3 +116,4 @@ Vi jobbar i feature-branches som slås ihop med `dev` via pull requests. `main` 
 - **Albin:** projekt (lista, kort, formulär, sammanfattning) samt filtrering och sortering
 - **Kim:** uppgifter och scrumboard (uppgiftskort, formulär för att lägga till och ändra, slutföra och radera)
 - **Therese:** medlemmar (lista, kort, formulär) samt tilldelning av uppgifter
+
