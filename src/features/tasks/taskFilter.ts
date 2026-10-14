@@ -2,9 +2,8 @@ import type { Task } from "../../models/Task";
 import type { Member } from "../../models/Member";
 import { createSelectOption } from "../../utils/dom";
 
-// Filtrerar uppgifterna på kategori och medlem
+// Filters the tasks on category and member
 export function filterTasks(tasks: Task[], category: string, memberId: string): Task[] {
-	// Ger tillbaka den nya filtrerade listan
 	return tasks.filter(function (task) {
 		if (category !== "" && task.getCategory() !== category) {
 			return false;
@@ -16,17 +15,16 @@ export function filterTasks(tasks: Task[], category: string, memberId: string): 
 		return true;
 	});
 }
-// Jämför vilken av de två uppgifter som har tidigast deadline
+// Compares two tasks to see which one has the earliest deadline
 function compareDeadline(firstTask: Task, secondTask: Task): number {
 	return firstTask.getDeadline().localeCompare(secondTask.getDeadline());
 }
-// Samma som föregående fast för titel."sv" gör att å,ä och ö sorteras rätt
+// Same as above but for the title. "sv" makes å, ä and ö sort in the right order
 function compareTitle(firstTask: Task, secondTask: Task): number {
 	return firstTask.getTitle().localeCompare(secondTask.getTitle(), "sv");
 }
-// Sorterar uppgifterna efter det som är valt i sorteringsrutan
+// Sorts the tasks by what is chosen in the sort box
 export function sortTasks(tasks: Task[], sort: string): Task[] {
-	// Jobbar på en kopia, så att listan i boarden behåller sin ordning
 	const sorted = [...tasks];
 
 	if (sort.startsWith("deadline")) {
@@ -35,15 +33,13 @@ export function sortTasks(tasks: Task[], sort: string): Task[] {
 	if (sort.startsWith("title")) {
 		sorted.sort(compareTitle);
 	}
-	// Vänder listan från stigande till fallande
-	// Påverkar bara kopian sorted
 	if (sort.endsWith("-desc")) {
 		sorted.reverse();
 	}
 
 	return sorted;
 }
-// Läser av vad som är valt i filter och sorteringsrutorna
+// Reads what is chosen in the filter and sort boxes
 export function getFilterValues() {
 	const categorySelect = document.querySelector<HTMLSelectElement>("#filter-category");
 	const memberSelect = document.querySelector<HTMLSelectElement>("#filter-member");
@@ -55,7 +51,7 @@ export function getFilterValues() {
 		sort: sortSelect?.value ?? "deadline-asc",
 	};
 }
-// Kör onChange varje gång någon ändrar filter eller sortering
+// Runs onChange every time someone changes a filter or the sorting
 export function setupTaskFilters(onChange: () => void): void {
 	const selects = document.querySelectorAll<HTMLSelectElement>(
 		"#filter-category, #filter-member, #sort",
@@ -65,7 +61,7 @@ export function setupTaskFilters(onChange: () => void): void {
 		select.addEventListener("change", onChange);
 	}
 }
-// Fyller medlemsfiltret med alla medlemmar så man kan välja en av dem
+// Fills the member filter with the members so you can pick one of them
 export function renderMemberFilter(members: Member[]): void {
 	const memberSelect = document.querySelector<HTMLSelectElement>("#filter-member");
 
