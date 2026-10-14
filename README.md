@@ -135,10 +135,9 @@ Funktionsnamn skrivs med `camelCase` och beskriver funktionens syfte.
 
 ## Framtida förbättringar
 
-- Förbättra användarupplevelsen för medlemsvalet i formuläret för nya projekt. Det nuvarande flervalsfältet (<select multiple>) kräver Ctrl/Cmd-klick för att välja flera medlemmar, vilket inte är självklart för alla användare.
+- Förbättra användarupplevelsen för medlemsvalet i formuläret för nya projekt. Det nuvarande flervalsfältet `<select multiple>` kräver Ctrl/Cmd-klick för att välja flera medlemmar, vilket inte är självklart för alla användare.
   
-  ## AI-användning
-  
+## AI-användning  
 
 AI har använts som stöd för att ta fram en grundläggande layout med Bootstrap och en grundstruktur för projektets filer.
 
