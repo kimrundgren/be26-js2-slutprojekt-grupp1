@@ -34,6 +34,11 @@ export async function setupProjectForm(): Promise<void> {
 		clearFormError(formError);
 	});
 
+	// Fetches the members again every time the modal opens, so new members show up
+	modal.addEventListener("show.bs.modal", function () {
+		renderMemberSelect(memberSelect, formError);
+	});
+
 	form.addEventListener("submit", async function (event) {
 		event.preventDefault();
 		clearFormError(formError);
@@ -71,7 +76,7 @@ async function renderMemberSelect(
 ): Promise<void> {
 	try {
 		const members = await getAllMembers();
-
+		memberSelect.replaceChildren();
 		for (const member of members) {
 			memberSelect.append(createSelectOption(member.getName(), member.getId()));
 		}
